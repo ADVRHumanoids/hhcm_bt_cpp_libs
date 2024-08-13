@@ -8,6 +8,17 @@
 #include <tf2_ros/transform_listener.h>
 #include <geometry_msgs/TransformStamped.h>
 
+/**
+ * This class is intended to have a unique tf listener
+ * that fills the requested tf at each loop. The handler
+ * is created in the main, outside the tree. Each node that 
+ * necessitate a tf, will have the TF::Ptr as constructor 
+ * argument, such that to read the necessary tf, that can be
+ * added with addTf in the initialization of the node.
+ * The handler will check every added tf and find the relative
+ * transforms.
+ * 
+ */
 
 namespace hhcm_bt {
 
