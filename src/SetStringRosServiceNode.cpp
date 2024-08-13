@@ -1,0 +1,37 @@
+#include <hhcm_bt_cpp_libs/SetStringRosServiceNode.h>
+
+using hhcm_bt::SetStringRosServiceNode;
+
+SetStringRosServiceNode::SetStringRosServiceNode(
+        const std::string& name, const BT::NodeConfig & conf, ros::NodeHandle* nh, const std::string& service_name) :
+        BT::RosServiceNode<xbot_msgs::SetString>(name, conf, nh, service_name)
+{
+
+    _the_string = getInput<std::string>("request").value();
+
+}
+
+BT::PortsList SetStringRosServiceNode::providedPorts() {
+
+    return { 
+        BT::InputPort<double>("request")
+    };
+}
+
+
+bool SetStringRosServiceNode::prepareRequest(RequestType& request) {
+
+    request.request = _the_string;
+
+    return true;
+
+}    
+
+BT::NodeStatus SetStringRosServiceNode::onResponse( const ResponseType& res) {
+
+    if (res.success){
+        return BT::NodeStatus::SUCCESS;
+    }
+    
+    return BT::NodeStatus::FAILURE;
+}

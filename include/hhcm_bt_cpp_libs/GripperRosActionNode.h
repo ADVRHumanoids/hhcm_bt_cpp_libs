@@ -1,0 +1,33 @@
+#ifndef HHCM_BT_CPP_LIBS_GRIPPER_ROS_ACTION_NODE_H
+#define HHCM_BT_CPP_LIBS_GRIPPER_ROS_ACTION_NODE_H
+
+#include <ros/ros.h>
+
+#include <hhcm_bt_cpp_libs/behaviortree_ros/RosActionNode.h>
+
+#include <control_msgs/GripperCommandAction.h>
+
+namespace hhcm_bt {
+
+class GripperRosActionNode : public BT::RosActionNode<control_msgs::GripperCommandAction> 
+{
+public:
+     GripperRosActionNode(const std::string& name, const BT::NodeConfig& config, 
+        ros::NodeHandle* nh, const std::string& server_name);
+
+    virtual ~GripperRosActionNode() {};
+
+    static BT::PortsList providedPorts();
+
+    bool prepareGoal(GoalType& goal) override;
+    BT::NodeStatus onResult( const ResultType& res) override;
+
+private:
+    double _position;
+    double _max_effort;
+    
+};
+
+}//namespace
+
+#endif //  HHCM_BT_CPP_LIBS_GRIPPER_ROS_ACTION_NODE_H
