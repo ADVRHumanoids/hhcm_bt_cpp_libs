@@ -57,12 +57,19 @@ include_directories(
   ${EIGEN3_INCLUDE_DIRS}
 )
 
+add_library(${PROJECT_NAME}_TF
+    src/TF.cpp
+)
+target_link_libraries(${PROJECT_NAME}_TF
+    ${catkin_LIBRARIES}
+)
 
 add_library(${PROJECT_NAME}_TFHandler
     src/TFHandler.cpp
 )
 target_link_libraries(${PROJECT_NAME}_TFHandler 
     ${catkin_LIBRARIES}
+    ${PROJECT_NAME}_TF
 )
 
 add_library(${PROJECT_NAME}_GripperRosActionNode
@@ -81,9 +88,13 @@ target_link_libraries(${PROJECT_NAME}_SetStringRosServiceNode
     BT::behaviortree_cpp
 )
 
-
-
-
+add_library(${PROJECT_NAME}_TwistRosPubNode
+    src/TwistRosPubNode.cpp
+)
+target_link_libraries(${PROJECT_NAME}_TwistRosPubNode 
+    ${catkin_LIBRARIES}
+    BT::behaviortree_cpp
+)
 
 #############
 ## Install ##

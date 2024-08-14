@@ -6,12 +6,14 @@
 
 namespace hhcm_bt {
 
-class SetStringRosServiceNode : BT::RosServiceNode<xbot_msgs::SetString> {
+class SetStringRosServiceNode : public BT::RosServiceNode<xbot_msgs::SetString> 
+{
 
 public:
 
     SetStringRosServiceNode(
-        const std::string& name, const BT::NodeConfig & conf, ros::NodeHandle* nh, const std::string& service_name);
+        const std::string& name, const BT::NodeConfig & conf,
+        ros::NodeHandle* nh, const std::string& service_name);
 
     virtual ~SetStringRosServiceNode() {};
 

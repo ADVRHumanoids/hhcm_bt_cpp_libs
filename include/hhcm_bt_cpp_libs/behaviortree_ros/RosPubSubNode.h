@@ -158,9 +158,7 @@ public:
         {}
         
     virtual ~RosPubSubNodeContinuos(){};
-        
-    virtual bool modifyMsg() = 0;
-    
+            
     virtual bool hasFinished() override final {
         return false;
     };

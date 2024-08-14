@@ -1,5 +1,5 @@
-#ifndef HHCM_BT_CPP_LIBS_TF_HANDLER_H
-#define HHCM_BT_CPP_LIBS_TF_HANDLER_H
+#ifndef HHCM_BT_CPP_LIBS_TF_H
+#define HHCM_BT_CPP_LIBS_TF_H
 
 #include <ros/ros.h>
 #include <tf2/transform_datatypes.h>
@@ -7,8 +7,6 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <tf2_ros/transform_listener.h>
 #include <geometry_msgs/TransformStamped.h>
-
-#include <hhcm_bt_cpp_libs/TF.h>
 
 /**
  * This class is intended to have a unique tf listener
@@ -23,29 +21,21 @@
  */
 
 namespace hhcm_bt {
-class TFHandler {
-    
-public:
-    TFHandler(ros::NodeHandle* nh);
-    
-    bool getTf(); 
-    bool waitForRos(const std::string &from, const std::string &to);
-    
-    hhcm_bt::TF::Ptr tf;
 
-  
-private:
+struct TF {
     
-    ros::NodeHandle* nh;
-    hhcm_bt::TF::Ptr tf_internal;
+    typedef std::shared_ptr<TF> Ptr;
+    typedef std::shared_ptr<const TF> ConstPtr;
     
-    ros::Time last_time;
+    TF() {};
     
-    tf2_ros::Buffer tf_buffer;
-    std::unique_ptr<tf2_ros::TransformListener> tf_listener;
-  
+    std::map<std::pair<std::string, std::string>, tf2::Stamped<tf2::Transform> > x_T_x;
+    
+    bool addTf(const std::pair<std::string, std::string>& key);
+    bool addTf(const std::string& from, const std::string& to);
+
 };
     
 } //namespace
 
-#endif //HHCM_BT_CPP_LIBS_TF_HANDLER_H
+#endif //HHCM_BT_CPP_LIBS_TF_H

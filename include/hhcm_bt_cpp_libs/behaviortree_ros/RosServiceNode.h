@@ -35,7 +35,8 @@ class RosServiceNode : public BT::StatefulActionNode
 {
 protected:
 
-    RosServiceNode(const std::string& name, const BT::NodeConfig & conf, ros::NodeHandle* nh, const std::string& service_name):
+    RosServiceNode(const std::string& name, const BT::NodeConfig & conf, 
+    ros::NodeHandle* nh, const std::string& service_name):
     BT::StatefulActionNode(name, conf), node_(nh) {
         
         service_client_ = node_->serviceClient<ServiceT>( service_name );
@@ -94,6 +95,7 @@ protected:
     ros::NodeHandle* node_;
     
     virtual BT::NodeStatus onStart() override {
+        
         unsigned msec = getInput<unsigned>("timeout").value();
         ros::Duration timeout(static_cast<double>(msec) * 1e-3);
         

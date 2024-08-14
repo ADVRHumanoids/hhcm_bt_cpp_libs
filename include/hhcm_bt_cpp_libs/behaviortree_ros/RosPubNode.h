@@ -32,24 +32,23 @@ public:
 
     virtual ~RosPubNode() = default;
     
-    // aliases just for the RegisterRosPubSub at the bottom
+    // aliases just for the RegisterRosPub at the bottom
     using PubMsgTypeReg = PubMsgType;
 
     /// These ports will be added automatically if this Node is
     /// registered using RegisterRosAction<DeriveClass>()
     static PortsList providedPorts() 
     {
-        return  {
-        };
+        return  {};
     };
 
-    ///Method called in the onStart(). can be used to the fields of  the pub_msg_ object, 
+    ///Method called in the onStart(). can be used to the fields of the pub_msg_ object, 
     ///and fill the field
     virtual bool onStartInitialization() = 0;
     
-    ///This method is called at each loop, and can be used to modify the msg and publish a different one
-    /// (like for sending a velocity reference based on the actual position). You may want to check
-    /// for sub_msg_ as a feedback. OPTIONAL, as default it does nothing.
+    ///This method is called at each loop, and can be used to modify the msg and publish a different one 
+    /// at each tick (like for sending an increased/decreased velocity reference based on a trajectory smoothed in time).
+    ///OPTIONAL, as default it does nothing.
     virtual bool modifyMsg() {
         return true;
     }
@@ -82,8 +81,6 @@ public:
   
     virtual BT::NodeStatus onStart() override final
     {
-        unsigned msec = getInput<unsigned>("timeout").value();
-        ros::Duration timeout(static_cast<double>(msec) * 1e-3);
         
         if (!onStartInitialization()) {
             return onFailed(FAIL_ON_START);
@@ -129,20 +126,18 @@ private:
  * derived from above, this will return always running (excpept if halted)
  * also by pub once is false (ie modify msg is called, and must be implemented)
  */
-template<typename PubMsgType, typename SubMsgType>
-class RosPubNodeContinuos: public RosPubNode<PubMsgType, SubMsgType> {
+template<typename PubMsgType>
+class RosPubNodeContinuos: public RosPubNode<PubMsgType> {
     
 public:
     RosPubNodeContinuos(const std::string& name, const BT::NodeConfig & conf, ros::NodeHandle* nh,
                   const std::string& pub_topic_name):
                   
-        RosPubNode<PubMsgType, SubMsgType>(name, conf, nh, pub_topic_name)
+        RosPubNode<PubMsgType>(name, conf, nh, pub_topic_name)
         {}
         
     virtual ~RosPubNodeContinuos(){};
-        
-    virtual bool modifyMsg() = 0;
-    
+            
     virtual bool hasFinished() override final {
         return false;
     };
