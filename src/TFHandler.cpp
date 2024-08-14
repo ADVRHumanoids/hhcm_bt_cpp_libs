@@ -2,7 +2,6 @@
 
 using hhcm_bt::TFHandler;
 
-
 TFHandler::TFHandler(ros::NodeHandle* nh) : 
     nh(nh)
 {

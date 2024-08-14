@@ -11,17 +11,9 @@ find_package(catkin REQUIRED
     tf2_ros
     tf2_msgs
     xbot_msgs
-    #tf2_eigen
-    #eigen_conversions
-    # utils
-    # xbot_msgs
-    # std_srvs
-    # tf2
-    # ddynamic_reconfigure
 )
 
 find_package(behaviortree_cpp REQUIRED)
-#find_package(Eigen3 REQUIRED)
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -40,9 +32,22 @@ find_package(behaviortree_cpp REQUIRED)
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
    INCLUDE_DIRS include
-#  LIBRARIES tpo_bt
-#  CATKIN_DEPENDS other_catkin_pkg
-#  DEPENDS system_lib
+   LIBRARIES 
+    ${PROJECT_NAME}_TF 
+    ${PROJECT_NAME}_TFHandler 
+    ${PROJECT_NAME}_GripperRosActionNode 
+    ${PROJECT_NAME}_SetStringRosServiceNode 
+    ${PROJECT_NAME}_TwistRosPubNode 
+  CATKIN_DEPENDS 
+    roscpp
+    rospy
+    geometry_msgs
+    control_msgs
+    tf2_ros
+    tf2_msgs
+    xbot_msgs
+  DEPENDS 
+    behaviortree_cpp
 )
 
 ###########
@@ -54,7 +59,6 @@ catkin_package(
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
-  ${EIGEN3_INCLUDE_DIRS}
 )
 
 add_library(${PROJECT_NAME}_TF
@@ -63,6 +67,7 @@ add_library(${PROJECT_NAME}_TF
 target_link_libraries(${PROJECT_NAME}_TF
     ${catkin_LIBRARIES}
 )
+add_dependencies(${PROJECT_NAME}_TF ${catkin_EXPORTED_TARGETS})
 
 add_library(${PROJECT_NAME}_TFHandler
     src/TFHandler.cpp
@@ -71,6 +76,7 @@ target_link_libraries(${PROJECT_NAME}_TFHandler
     ${catkin_LIBRARIES}
     ${PROJECT_NAME}_TF
 )
+add_dependencies(${PROJECT_NAME}_TFHandler ${catkin_EXPORTED_TARGETS})
 
 add_library(${PROJECT_NAME}_GripperRosActionNode
     src/GripperRosActionNode.cpp
@@ -79,6 +85,7 @@ target_link_libraries(${PROJECT_NAME}_GripperRosActionNode
     ${catkin_LIBRARIES}
     BT::behaviortree_cpp
 )
+add_dependencies(${PROJECT_NAME}_GripperRosActionNode ${catkin_EXPORTED_TARGETS})
 
 add_library(${PROJECT_NAME}_SetStringRosServiceNode
     src/SetStringRosServiceNode.cpp
@@ -87,6 +94,7 @@ target_link_libraries(${PROJECT_NAME}_SetStringRosServiceNode
     ${catkin_LIBRARIES}
     BT::behaviortree_cpp
 )
+add_dependencies(${PROJECT_NAME}_SetStringRosServiceNode ${catkin_EXPORTED_TARGETS})
 
 add_library(${PROJECT_NAME}_TwistRosPubNode
     src/TwistRosPubNode.cpp
@@ -95,6 +103,7 @@ target_link_libraries(${PROJECT_NAME}_TwistRosPubNode
     ${catkin_LIBRARIES}
     BT::behaviortree_cpp
 )
+add_dependencies(${PROJECT_NAME}_TwistRosPubNode ${catkin_EXPORTED_TARGETS})
 
 #############
 ## Install ##
@@ -118,18 +127,24 @@ target_link_libraries(${PROJECT_NAME}_TwistRosPubNode
 
 ## Mark libraries for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_libraries.html
-# install(TARGETS ${PROJECT_NAME}
-#   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
-# )
+install(
+    TARGETS 
+        ${PROJECT_NAME}_TF 
+        ${PROJECT_NAME}_TFHandler 
+        ${PROJECT_NAME}_GripperRosActionNode 
+        ${PROJECT_NAME}_SetStringRosServiceNode 
+        ${PROJECT_NAME}_TwistRosPubNode 
+    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+    RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
+)
 
 ## Mark cpp header files for installation
-# install(DIRECTORY include/${PROJECT_NAME}/
-#   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-#   FILES_MATCHING PATTERN "*.h"
-#   PATTERN ".svn" EXCLUDE
-# )
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  FILES_MATCHING PATTERN "*.h"
+  PATTERN ".svn" EXCLUDE
+)
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
 # install(FILES
