@@ -33,5 +33,32 @@ bool TF::addTf(const std::pair<std::string, std::string> & key ) {
     }
     
     return true;
+}
+
+bool TF::getTf(const std::string& from, const std::string& to, tf2::Stamped<tf2::Transform> &transform, const double &timeout) {
     
+    std::pair<std::string, std::string> key = std::make_pair(from, to);
+    return getTf(key, transform, timeout);
+}
+
+bool TF::getTf(const std::pair<std::string, std::string>& key, tf2::Stamped<tf2::Transform> &transform, const double &timeout) {
+
+    auto it = x_T_x.find(key);
+
+    if (it == x_T_x.end()) {
+        ROS_ERROR("TF::getTf ERROR: pair '%s, %s' not found", key.first.c_str(), key.second.c_str());
+        return false;
+    }
+
+    auto diff = ros::Time::now() - it->second.stamp_;
+
+    if (diff > ros::Duration(timeout) ) {
+        ROS_ERROR("TF::getTf ERROR: pair '%s, %s' has too old stamp (%fs)", 
+            key.first.c_str(), key.second.c_str(), diff.toSec());
+        return false;
+    }
+
+    transform = it->second;
+
+    return true;
 }

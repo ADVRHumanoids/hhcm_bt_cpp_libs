@@ -23,17 +23,29 @@
 namespace hhcm_bt {
 
 struct TF {
-    
+
+    friend class TFHandler;
+
+public:
     typedef std::shared_ptr<TF> Ptr;
     typedef std::shared_ptr<const TF> ConstPtr;
-    
+
     TF() {};
-    
-    std::map<std::pair<std::string, std::string>, tf2::Stamped<tf2::Transform> > x_T_x;
-    
+
+    //non copyable, only one instance must exist and shared among everyone with pointers
+    TF(const TF&) = delete;
+    TF& operator=(const TF&) = delete;
+
     bool addTf(const std::pair<std::string, std::string>& key);
     bool addTf(const std::string& from, const std::string& to);
 
+    bool getTf(const std::pair<std::string, std::string>& key, tf2::Stamped<tf2::Transform> &transform, const double &timeout = 1);
+    bool getTf(const std::string& from, const std::string& to, tf2::Stamped<tf2::Transform> &transform, const double &timeout = 1);
+    
+private:
+
+    std::map<std::pair<std::string, std::string>, tf2::Stamped<tf2::Transform> > x_T_x;
+    
 };
     
 } //namespace

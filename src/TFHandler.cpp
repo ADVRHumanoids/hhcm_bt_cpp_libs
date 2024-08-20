@@ -33,7 +33,7 @@ bool TFHandler::getTf()
         }
         catch (tf2::TransformException &ex) {
             
-            ROS_ERROR("TFHandler::getTF() Error: %s",ex.what());
+            ROS_ERROR_THROTTLE(1,"TFHandler::getTF() Error: %s",ex.what());
             return false;
         }
         

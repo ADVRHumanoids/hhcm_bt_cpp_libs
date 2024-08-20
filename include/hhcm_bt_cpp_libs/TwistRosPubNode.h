@@ -4,6 +4,7 @@
 #include <ros/ros.h>
 
 #include <hhcm_bt_cpp_libs/behaviortree_ros/RosPubNode.h>
+#include <hhcm_bt_cpp_libs/PortGeometryMsgsConversions.h>
 
 #include <geometry_msgs/TwistStamped.h>
 
