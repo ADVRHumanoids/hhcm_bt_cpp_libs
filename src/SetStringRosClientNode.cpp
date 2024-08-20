@@ -1,8 +1,8 @@
-#include <hhcm_bt_cpp_libs/SetStringRosServiceNode.h>
+#include <hhcm_bt_cpp_libs/SetStringRosClientNode.h>
 
-using hhcm_bt::SetStringRosServiceNode;
+using hhcm_bt::SetStringRosClientNode;
 
-SetStringRosServiceNode::SetStringRosServiceNode(
+SetStringRosClientNode::SetStringRosClientNode(
         const std::string& name, const BT::NodeConfig & conf, 
         ros::NodeHandle* nh, const std::string& service_name) :
         BT::RosServiceNode<xbot_msgs::SetString>(name, conf, nh, service_name)
@@ -10,7 +10,7 @@ SetStringRosServiceNode::SetStringRosServiceNode(
 
 }
 
-BT::PortsList SetStringRosServiceNode::providedPorts() {
+BT::PortsList SetStringRosClientNode::providedPorts() {
 
     return { 
         BT::InputPort<double>("request"),
@@ -19,7 +19,7 @@ BT::PortsList SetStringRosServiceNode::providedPorts() {
 }
 
 
-bool SetStringRosServiceNode::prepareRequest(RequestType& request) {
+bool SetStringRosClientNode::prepareRequest(RequestType& request) {
 
     _the_string = getInput<std::string>("request").value();
 
@@ -29,7 +29,7 @@ bool SetStringRosServiceNode::prepareRequest(RequestType& request) {
 
 }    
 
-BT::NodeStatus SetStringRosServiceNode::onResponse( const ResponseType& res) {
+BT::NodeStatus SetStringRosClientNode::onResponse( const ResponseType& res) {
 
     if (res.success){
         return BT::NodeStatus::SUCCESS;

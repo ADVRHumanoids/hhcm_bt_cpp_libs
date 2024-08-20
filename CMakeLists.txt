@@ -11,6 +11,7 @@ find_package(catkin REQUIRED
     tf2_ros
     tf2_msgs
     xbot_msgs
+    tpo_msgs
 )
 
 find_package(behaviortree_cpp REQUIRED)
@@ -35,9 +36,13 @@ catkin_package(
    LIBRARIES 
     ${PROJECT_NAME}_TF 
     ${PROJECT_NAME}_TFHandler 
+    ${PROJECT_NAME}_TFReaderNode 
     ${PROJECT_NAME}_GripperRosActionNode 
-    ${PROJECT_NAME}_SetStringRosServiceNode 
+    ${PROJECT_NAME}_SetStringRosClientNode
+    ${PROJECT_NAME}_SetStringRosServerHandler
     ${PROJECT_NAME}_TwistRosPubNode 
+    ${PROJECT_NAME}_CheckStillTransform 
+    ${PROJECT_NAME}_TpoPosesRosActionNode 
   CATKIN_DEPENDS 
     roscpp
     rospy
@@ -46,6 +51,7 @@ catkin_package(
     tf2_ros
     tf2_msgs
     xbot_msgs
+    tpo_msgs
   DEPENDS 
     behaviortree_cpp
 )
@@ -78,6 +84,16 @@ target_link_libraries(${PROJECT_NAME}_TFHandler
 )
 add_dependencies(${PROJECT_NAME}_TFHandler ${catkin_EXPORTED_TARGETS})
 
+add_library(${PROJECT_NAME}_TFReaderNode
+    src/TFReaderNode.cpp
+)
+target_link_libraries(${PROJECT_NAME}_TFReaderNode 
+    ${catkin_LIBRARIES}
+    BT::behaviortree_cpp
+    ${PROJECT_NAME}_TF
+)
+add_dependencies(${PROJECT_NAME}_TFReaderNode ${catkin_EXPORTED_TARGETS})
+
 add_library(${PROJECT_NAME}_GripperRosActionNode
     src/GripperRosActionNode.cpp
 )
@@ -87,14 +103,23 @@ target_link_libraries(${PROJECT_NAME}_GripperRosActionNode
 )
 add_dependencies(${PROJECT_NAME}_GripperRosActionNode ${catkin_EXPORTED_TARGETS})
 
-add_library(${PROJECT_NAME}_SetStringRosServiceNode
-    src/SetStringRosServiceNode.cpp
+add_library(${PROJECT_NAME}_SetStringRosClientNode
+    src/SetStringRosClientNode.cpp
 )
-target_link_libraries(${PROJECT_NAME}_SetStringRosServiceNode 
+target_link_libraries(${PROJECT_NAME}_SetStringRosClientNode 
     ${catkin_LIBRARIES}
     BT::behaviortree_cpp
 )
-add_dependencies(${PROJECT_NAME}_SetStringRosServiceNode ${catkin_EXPORTED_TARGETS})
+add_dependencies(${PROJECT_NAME}_SetStringRosClientNode ${catkin_EXPORTED_TARGETS})
+
+add_library(${PROJECT_NAME}_SetStringRosServerHandler
+    src/SetStringRosServerHandler.cpp
+)
+target_link_libraries(${PROJECT_NAME}_SetStringRosServerHandler 
+    ${catkin_LIBRARIES}
+    BT::behaviortree_cpp
+)
+add_dependencies(${PROJECT_NAME}_SetStringRosServerHandler ${catkin_EXPORTED_TARGETS})
 
 add_library(${PROJECT_NAME}_TwistRosPubNode
     src/TwistRosPubNode.cpp
@@ -104,6 +129,25 @@ target_link_libraries(${PROJECT_NAME}_TwistRosPubNode
     BT::behaviortree_cpp
 )
 add_dependencies(${PROJECT_NAME}_TwistRosPubNode ${catkin_EXPORTED_TARGETS})
+
+add_library(${PROJECT_NAME}_CheckStillTransform
+    src/CheckStillTransform.cpp
+)
+target_link_libraries(${PROJECT_NAME}_CheckStillTransform 
+    ${catkin_LIBRARIES}
+    BT::behaviortree_cpp
+)
+add_dependencies(${PROJECT_NAME}_CheckStillTransform ${catkin_EXPORTED_TARGETS})
+
+add_library(${PROJECT_NAME}_TpoPosesRosActionNode
+    src/TpoPosesRosActionNode.cpp
+)
+target_link_libraries(${PROJECT_NAME}_TpoPosesRosActionNode 
+    ${catkin_LIBRARIES}
+    BT::behaviortree_cpp
+)
+add_dependencies(${PROJECT_NAME}_TpoPosesRosActionNode ${catkin_EXPORTED_TARGETS})
+
 
 #############
 ## Install ##
@@ -131,9 +175,13 @@ install(
     TARGETS 
         ${PROJECT_NAME}_TF 
         ${PROJECT_NAME}_TFHandler 
+        ${PROJECT_NAME}_TFReaderNode 
         ${PROJECT_NAME}_GripperRosActionNode 
-        ${PROJECT_NAME}_SetStringRosServiceNode 
+        ${PROJECT_NAME}_SetStringRosClientNode
+        ${PROJECT_NAME}_SetStringRosServerHandler
         ${PROJECT_NAME}_TwistRosPubNode 
+        ${PROJECT_NAME}_CheckStillTransform 
+        ${PROJECT_NAME}_TpoPosesRosActionNode 
     ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
     LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
     RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}

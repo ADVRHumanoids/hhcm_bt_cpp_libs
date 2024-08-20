@@ -6,6 +6,7 @@
 #include <geometry_msgs/Point.h>
 #include <geometry_msgs/Quaternion.h>
 #include <geometry_msgs/TransformStamped.h>
+#include <geometry_msgs/Pose.h>
 
 #include <tf2/transform_datatypes.h>
 #include <tf2/LinearMath/Transform.h>
@@ -117,7 +118,47 @@ namespace BT
             return output;
         }
     }
-    
+
+    template <> inline geometry_msgs::Pose convertFromString(StringView str)
+    {
+        if (str.size() == 0) {
+            throw RuntimeError("empty stringview");
+        }
+        
+        auto parts = splitString(str, ',');
+        if (parts.size() != 7)
+        {
+            std::string err_str = 
+                "invalid input: expected this format: 'x, y, z, rot_x, rot_y, rot_z, rot_w', received '" + std::string(str) + "'";
+            throw RuntimeError(err_str);
+        }
+        else{
+            geometry_msgs::Pose output;
+            output.position.x = convertFromString<double>(parts[0]);
+            output.position.y = convertFromString<double>(parts[1]);
+            output.position.z = convertFromString<double>(parts[2]);
+            output.orientation.x = convertFromString<double>(parts[3]);
+            output.orientation.y = convertFromString<double>(parts[4]);
+            output.orientation.z = convertFromString<double>(parts[5]);
+            output.orientation.w = convertFromString<double>(parts[6]);
+            
+            return output;
+        }
+    } 
+
+    template <>
+    std::vector<geometry_msgs::Pose> convertFromString<std::vector<geometry_msgs::Pose>>(StringView str)
+    {
+        auto parts = splitString(str, ';');
+        std::vector<geometry_msgs::Pose> output;
+        output.reserve(parts.size());
+        for(const StringView& part : parts)
+        {
+            output.push_back(convertFromString<geometry_msgs::Pose>(part));
+        }
+        return output;
+    } 
+        
 } // end namespace BT
 
 #endif // HHCM_BT_CPP_LIBS_PORT_GEOMETRY_MSGS_CONVERSIONS
