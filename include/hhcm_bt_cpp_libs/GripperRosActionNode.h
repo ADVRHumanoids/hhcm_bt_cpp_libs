@@ -21,10 +21,6 @@ public:
 
     bool prepareGoal(GoalType& goal) override;
     BT::NodeStatus onResult( const ResultType& res) override;
-
-private:
-    double _position;
-    double _max_effort;
     
 };
 

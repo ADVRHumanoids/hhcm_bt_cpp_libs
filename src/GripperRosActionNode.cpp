@@ -20,11 +20,20 @@ BT::PortsList GripperRosActionNode::providedPorts() {
 
 bool GripperRosActionNode::prepareGoal(GoalType& goal) {
 
-    _position = getInput<double>("position").value();
-    _max_effort = getInput<double>("max_effort").value();
+    auto position_exp = getInput<double>("position");
+    auto max_effort_exp = getInput<double>("max_effort");
 
-    goal.command.position = _position;
-    goal.command.max_effort = _max_effort;
+    if (!position_exp && !max_effort_exp) {
+        ROS_ERROR_STREAM("Please provide at least one between 'position' and 'max_effort' args");
+        return false;
+    }
+
+    if (position_exp) {
+        goal.command.position = position_exp.value();
+    }
+    if (max_effort_exp) {
+        goal.command.max_effort = max_effort_exp.value();
+    }
 
     return true;
 }

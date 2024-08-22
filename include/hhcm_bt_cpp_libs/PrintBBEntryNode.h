@@ -25,7 +25,7 @@ public:
         if (val_exp) {
             std::cout << "[" << name() << "] entry value is: " << val_exp.value() << std::endl;
         } else {
-            std::cout << "[" << name() << "] no request" << std::endl;
+            std::cout << "[" << name() << "] no variable found " << std::endl;
 
         }
         return BT::NodeStatus::SUCCESS;
