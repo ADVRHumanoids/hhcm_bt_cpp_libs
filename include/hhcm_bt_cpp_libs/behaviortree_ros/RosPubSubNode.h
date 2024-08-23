@@ -17,7 +17,7 @@ class RosPubSubNode : public BT::StatefulActionNode
 protected:
     
     RosPubSubNode(const std::string& name, const BT::NodeConfig & conf, ros::NodeHandle* nh,
-                  const std::string& pub_topic_name, const std::string& sub_topic_name, const bool& pub_once=false):
+                  const std::string& pub_topic_name, const std::string& sub_topic_name):
         BT::StatefulActionNode(name, conf), node_(nh)
     {
         pub_ = node_->advertise<PubMsgType>(pub_topic_name, 10);

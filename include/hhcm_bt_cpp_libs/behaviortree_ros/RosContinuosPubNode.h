@@ -1,7 +1,8 @@
-// taken from https://github.com/BehaviorTree/BehaviorTree.ROS,
+// taken from https://github.com/BehaviorTree/BehaviorTree.ROS and ROS2 version,
+// but using the class StatefulActionNode and not directly the ActionNodeBase
 
-#ifndef HHCM_BT_CPP_LIBS_ROS_PUB_NODE_HPP_
-#define HHCM_BT_CPP_LIBS_ROS_PUB_NODE_HPP_
+#ifndef HHCM_BT_CPP_LIBS_ROS_CONTINUOS_PUB_NODE_HPP_
+#define HHCM_BT_CPP_LIBS_ROS_CONTINUOS_PUB_NODE_HPP_
 
 #include <behaviortree_cpp/action_node.h>
 #include <behaviortree_cpp/bt_factory.h>
@@ -11,13 +12,13 @@ namespace BT
 {
 
 template<typename PubMsgType>
-class RosPubNode : public BT::SyncActionNode
+class RosContinuosPubNode : public BT::StatefulActionNode
 {
 protected:
     
-    RosPubNode(const std::string& name, const BT::NodeConfig & conf, ros::NodeHandle* nh,
+    RosContinuosPubNode(const std::string& name, const BT::NodeConfig & conf, ros::NodeHandle* nh,
                   const std::string& pub_topic_name):
-        BT::SyncActionNode(name, conf), node_(nh)
+        BT::StatefulActionNode(name, conf), node_(nh)
     {
         pub_ = node_->advertise<PubMsgType>(pub_topic_name, 1);
     }
@@ -26,9 +27,9 @@ protected:
 
 public:
 
-    RosPubNode() = delete;
+    RosContinuosPubNode() = delete;
 
-    virtual ~RosPubNode() = default;
+    virtual ~RosContinuosPubNode() = default;
     
     // aliases just for the RegisterRosPub at the bottom
     using PubMsgTypeReg = PubMsgType;
@@ -57,6 +58,14 @@ public:
     };
 
     /**
+     * called by the onStart, when trasitioning from idle
+     * OPTIONAL override, as default it does nothing.
+     */
+    virtual bool onStartInitialization() {
+        return true;
+    }
+
+    /**
      * This method is called at each tick, and can be used to modify the msg and publish a different one 
      * at each tick.
      * OPTIONAL override, as default it does nothing.
@@ -65,13 +74,29 @@ public:
         return true;
     }
 
-    BT::NodeStatus tick() override final {
+    /// Method called once, when transitioning from the state IDLE.
+    /// If it returns RUNNING, this becomes an asynchronous node.
+    virtual NodeStatus onStart() override final {
 
+        if (! onStartInitialization()) {
+            return BT::NodeStatus::FAILURE;
+        } 
+        return BT::NodeStatus::RUNNING;
+    }
+
+    /// method invoked when the action is already in the RUNNING state.
+    virtual NodeStatus onRunning() final {
         if (! modifyMsg()) {
             return BT::NodeStatus::FAILURE;
         }
         pub_.publish(msg_);
-        return BT::NodeStatus::SUCCESS;
+        return BT::NodeStatus::RUNNING;
+    }
+
+    /// when the method halt() is called and the action is RUNNING, this method is invoked.
+    /// This is a convenient place todo a cleanup, if needed.
+    virtual void onHalted() override final{
+        
     }
 
 private:
@@ -81,8 +106,9 @@ private:
     ros::NodeHandle* node_;
       
 };
+
         
 }  // namespace BT
 
-#endif  // HHCM_BT_CPP_LIBS_ROS_PUB_NODE_HPP_
+#endif  // HHCM_BT_CPP_LIBS_ROS_CONTINUOS_PUB_NODE_HPP_
 

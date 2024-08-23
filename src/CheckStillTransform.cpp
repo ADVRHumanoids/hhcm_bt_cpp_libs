@@ -16,19 +16,19 @@ CheckStillTransform::CheckStillTransform(
 
     if (!ref_frame_exp) {
 
-        throw "ref_frame port is empty!";
+        throw BT::RuntimeError("ref_frame port is empty!");
     }    
     if (!frame_exp) {
 
-        throw "frame port is empty!";
+        throw BT::RuntimeError("frame port is empty!");
     }    
     if (!still_threshold_pos_exp) {
 
-        throw "still_threshold_pos port is empty!";
+        throw BT::RuntimeError("still_threshold_pos port is empty!");
     }    
     if (!still_threshold_sec_exp) {
 
-        throw "still_threshold_pos port is empty!";
+        throw BT::RuntimeError("still_threshold_pos port is empty!");
     }
 
     ref_frame = ref_frame_exp.value();
@@ -37,7 +37,7 @@ CheckStillTransform::CheckStillTransform(
     still_threshold_sec = still_threshold_sec_exp.value();
     
     if (! _tf->addTf(ref_frame, frame)) {
-        throw "add tf returned false";
+        throw BT::RuntimeError("add tf returned false");
     }
 
     still_time = ros::Duration(0);

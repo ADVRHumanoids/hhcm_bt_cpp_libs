@@ -1,8 +1,6 @@
 #ifndef HHCM_BT_CPP_LIBS_TWIST_ROS_PUB_NODE_H
 #define HHCM_BT_CPP_LIBS_TWIST_ROS_PUB_NODE_H
 
-#include <ros/ros.h>
-
 #include <hhcm_bt_cpp_libs/behaviortree_ros/RosPubNode.h>
 #include <hhcm_bt_cpp_libs/PortGeometryMsgsConversions.h>
 
@@ -10,7 +8,7 @@
 
 namespace hhcm_bt {
 
-class TwistRosPubNode : public BT::RosPubNodeContinuos<geometry_msgs::TwistStamped> 
+class TwistRosPubNode : public BT::RosPubNode<geometry_msgs::TwistStamped> 
 {
 public:
      TwistRosPubNode(const std::string& name, const BT::NodeConfig& config, 
@@ -20,11 +18,10 @@ public:
 
     static BT::PortsList providedPorts();
 
-    bool onStartInitialization() override;
     bool modifyMsg() override;
 
 private:
-    void getPorts();
+    bool getPorts();
     
 };
 

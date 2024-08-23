@@ -1,15 +1,15 @@
-#include <hhcm_bt_cpp_libs/TwistRosPubNode.h>
+#include <hhcm_bt_cpp_libs/TwistRosContinuosPubNode.h>
 
-using hhcm_bt::TwistRosPubNode;
+using hhcm_bt::TwistRosContinuosPubNode;
 
-TwistRosPubNode::TwistRosPubNode(const std::string& name, const BT::NodeConfig& config, 
+TwistRosContinuosPubNode::TwistRosContinuosPubNode(const std::string& name, const BT::NodeConfig& config, 
         ros::NodeHandle* nh, const std::string& topic_name) :
-    BT::RosPubNode<geometry_msgs::TwistStamped>(name, config, nh, topic_name)
+    BT::RosContinuosPubNode<geometry_msgs::TwistStamped>(name, config, nh, topic_name)
 {
 
 }
 
-BT::PortsList TwistRosPubNode::providedPorts() {
+BT::PortsList TwistRosContinuosPubNode::providedPorts() {
     
     return providedBasicPorts({ 
         BT::InputPort<std::string>("frame_id"),
@@ -19,12 +19,17 @@ BT::PortsList TwistRosPubNode::providedPorts() {
     
 }
 
-bool TwistRosPubNode::modifyMsg() {
+bool TwistRosContinuosPubNode::onStartInitialization() {
 
     return getPorts();
 }
 
-bool TwistRosPubNode::getPorts() {
+bool TwistRosContinuosPubNode::modifyMsg() {
+
+    return getPorts();
+}
+
+bool TwistRosContinuosPubNode::getPorts() {
 
     auto frame_id_exp = getInput<std::string>("frame_id"); 
     auto linear_exp = getInput<geometry_msgs::Vector3>("linear"); 
@@ -32,17 +37,17 @@ bool TwistRosPubNode::getPorts() {
 
     if (! frame_id_exp)
     {
-        ROS_ERROR_STREAM("TwistRosPubNode ERROR, no frame_id port");
+        ROS_ERROR_STREAM("TwistRosContinuosPubNode ERROR, no frame_id port");
         return false;
     }     
     if (! linear_exp)
     {
-        ROS_ERROR_STREAM("TwistRosPubNode ERROR, no linear port");
+        ROS_ERROR_STREAM("TwistRosContinuosPubNode ERROR, no linear port");
         return false;
     }     
     if (! angular_exp)
     {
-        ROS_ERROR_STREAM("TwistRosPubNode ERROR, no angular port");
+        ROS_ERROR_STREAM("TwistRosContinuosPubNode ERROR, no angular port");
         return false;
     } 
 

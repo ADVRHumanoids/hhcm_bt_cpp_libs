@@ -41,7 +41,9 @@ catkin_package(
     ${PROJECT_NAME}_SetStringRosClientNode
     ${PROJECT_NAME}_SetStringRosServerHandler
     ${PROJECT_NAME}_TwistRosPubNode 
+    ${PROJECT_NAME}_TwistRosContinuosPubNode 
     ${PROJECT_NAME}_CheckStillTransform 
+    ${PROJECT_NAME}_CheckClosestFrame
     ${PROJECT_NAME}_TpoPosesRosActionNode 
   CATKIN_DEPENDS 
     roscpp
@@ -121,6 +123,15 @@ target_link_libraries(${PROJECT_NAME}_SetStringRosServerHandler
 )
 add_dependencies(${PROJECT_NAME}_SetStringRosServerHandler ${catkin_EXPORTED_TARGETS})
 
+add_library(${PROJECT_NAME}_TwistRosContinuosPubNode
+    src/TwistRosContinuosPubNode.cpp
+)
+target_link_libraries(${PROJECT_NAME}_TwistRosContinuosPubNode 
+    ${catkin_LIBRARIES}
+    BT::behaviortree_cpp
+)
+add_dependencies(${PROJECT_NAME}_TwistRosContinuosPubNode ${catkin_EXPORTED_TARGETS})
+
 add_library(${PROJECT_NAME}_TwistRosPubNode
     src/TwistRosPubNode.cpp
 )
@@ -138,6 +149,15 @@ target_link_libraries(${PROJECT_NAME}_CheckStillTransform
     BT::behaviortree_cpp
 )
 add_dependencies(${PROJECT_NAME}_CheckStillTransform ${catkin_EXPORTED_TARGETS})
+
+add_library(${PROJECT_NAME}_CheckClosestFrame
+    src/CheckClosestFrame.cpp
+)
+target_link_libraries(${PROJECT_NAME}_CheckClosestFrame 
+    ${catkin_LIBRARIES}
+    BT::behaviortree_cpp
+)
+add_dependencies(${PROJECT_NAME}_CheckClosestFrame ${catkin_EXPORTED_TARGETS})
 
 add_library(${PROJECT_NAME}_TpoPosesRosActionNode
     src/TpoPosesRosActionNode.cpp
@@ -179,8 +199,10 @@ install(
         ${PROJECT_NAME}_GripperRosActionNode 
         ${PROJECT_NAME}_SetStringRosClientNode
         ${PROJECT_NAME}_SetStringRosServerHandler
-        ${PROJECT_NAME}_TwistRosPubNode 
+        ${PROJECT_NAME}_TwistRosContinuosPubNode 
+        ${PROJECT_NAME}_TwistRosPubNode
         ${PROJECT_NAME}_CheckStillTransform 
+        ${PROJECT_NAME}_CheckClosestFrame
         ${PROJECT_NAME}_TpoPosesRosActionNode 
     ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
     LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
