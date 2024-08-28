@@ -13,7 +13,8 @@ SetStringRosClientNode::SetStringRosClientNode(
 BT::PortsList SetStringRosClientNode::providedPorts() {
 
     return { 
-        BT::InputPort<double>("request"),
+        BT::InputPort<std::string>("request"),
+        BT::OutputPort<std::string>("requested"),
         BT::InputPort<unsigned>("timeout", 100, "timeout to connect to server (milliseconds)")
     };
 }
@@ -32,6 +33,7 @@ bool SetStringRosClientNode::prepareRequest(RequestType& request) {
 BT::NodeStatus SetStringRosClientNode::onResponse( const ResponseType& res) {
 
     if (res.success){
+        setOutput("requested", _the_string);
         return BT::NodeStatus::SUCCESS;
     }
     
