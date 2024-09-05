@@ -4,6 +4,7 @@
 #include <ros/ros.h>
 #include <behaviortree_cpp/condition_node.h>
 #include <hhcm_bt_cpp_libs/TF.h>
+#include <hhcm_bt_cpp_libs/PortGeometryMsgsConversions.h>
 
 namespace hhcm_bt {
 
@@ -23,7 +24,7 @@ private:
 
     std::string _tracking_frame;
     std::vector<std::string> _check_frames;
-    std::vector<double> _threshold;
+    geometry_msgs::Vector3 _threshold;
 
     std::string _closest_frame;
 

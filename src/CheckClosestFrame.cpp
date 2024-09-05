@@ -10,17 +10,20 @@ CheckClosestFrame::CheckClosestFrame(
 
     auto tracking_frame_exp = getInput<std::string>("tracking_frame");
     auto check_frames_exp = getInput<std::vector<std::string>>("check_frames");
-    auto threshold_exp = getInput<std::vector<double>>("threshold");
+    auto threshold_exp = getInput<geometry_msgs::Vector3>("threshold");
 
-    if (tracking_frame_exp || tracking_frame_exp.value().size() == 0) {
+    if (!tracking_frame_exp || tracking_frame_exp.value().size() == 0) {
         throw BT::RuntimeError("tracking_frame port not defined or empty!");
     }    
-    if (check_frames_exp || check_frames_exp.value().size() == 0) {
+    if (!check_frames_exp || check_frames_exp.value().size() == 0) {
         throw BT::RuntimeError("check_frames port not defined or it is an empty vector!");
     }
-    if (threshold_exp || threshold_exp.value().size() != 3) {
+    if (!threshold_exp) {
         std::cout << "WARN threshold port empty or not valid: using default threshold 0.01, 0.01, 0.005";
-        _threshold = {0.01, 0.01, 0.005};
+        _threshold.x = 0.01;
+        _threshold.y = 0.01;
+        _threshold.z = 0.005;
+
     } else {
         _threshold = threshold_exp.value();
     }
@@ -41,7 +44,7 @@ BT::PortsList CheckClosestFrame::providedPorts() {
     return {
         BT::InputPort<std::string>("tracking_frame"),
         BT::InputPort<std::vector<std::string>>("check_frames"),
-        BT::InputPort<std::vector<double>>("threshold"),
+        BT::InputPort<geometry_msgs::Vector3>("threshold"),
         BT::OutputPort<std::string>("closest_frame")
     };
 }
@@ -55,9 +58,9 @@ BT::NodeStatus CheckClosestFrame::tick() {
     {
         if (_tf->getTf(std::make_pair(_tracking_frame, _check_frames[i]), _transform, 1)) {
         
-            if (std::abs(_transform.getOrigin().getX()) < _threshold.at(0) &&
-                std::abs(_transform.getOrigin().getY()) < _threshold.at(1)  &&
-                std::abs(_transform.getOrigin().getZ()) < _threshold.at(2) )
+            if (std::abs(_transform.getOrigin().getX()) < _threshold.x &&
+                std::abs(_transform.getOrigin().getY()) < _threshold.y &&
+                std::abs(_transform.getOrigin().getZ()) < _threshold.z )
             {
                 _closest_frame = _check_frames[i];
                 break;
