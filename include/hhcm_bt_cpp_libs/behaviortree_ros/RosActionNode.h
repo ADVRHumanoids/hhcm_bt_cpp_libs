@@ -35,13 +35,29 @@ public:
 
     virtual ~RosActionNode() = default;
 
-    /// These ports will be added automatically if this Node is
-    /// registered using RegisterRosAction<DeriveClass>()
+    /**
+     * @brief Any subclass of RosTopicPubNode that has additinal ports must provide a
+     * providedPorts method and call providedBasicPorts in it.
+     *
+     * @param addition Additional ports to add to BT port list
+     * @return PortsList Containing basic ports along with node-specific ports
+     */
+    static PortsList providedBasicPorts(PortsList addition)
+    {
+        PortsList basic = {
+            InputPort<unsigned>("timeout", 100, "timeout to connect to server (milliseconds)")
+        };
+        basic.insert(addition.begin(), addition.end());
+        return basic;
+    }
+
+    /**
+     * @brief Creates list of BT ports
+     * @return PortsList Containing basic ports along with node-specific ports
+     */
     static PortsList providedPorts() 
     {
-        return  {
-            BT::InputPort<unsigned>("timeout", 500, "timeout to connect (milliseconds)")
-        };
+        return providedBasicPorts({});
     };
 
     /// Method called when the Action makes a transition from IDLE to RUNNING.

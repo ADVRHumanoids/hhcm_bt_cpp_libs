@@ -53,17 +53,36 @@ public:
 
     virtual ~RosServiceNode() = default;
 
-    /// These ports will be added automatically if this Node is
-    /// registered using RegisterRosAction<DeriveClass>()
-    static PortsList providedPorts()
+    /**
+     * @brief Any subclass of RosTopicPubNode that has additinal ports must provide a
+     * providedPorts method and call providedBasicPorts in it.
+     *
+     * @param addition Additional ports to add to BT port list
+     * @return PortsList Containing basic ports along with node-specific ports
+     */
+    static PortsList providedBasicPorts(PortsList addition)
     {
-        return  {
-        InputPort<unsigned>("timeout", 100, "timeout to connect to server (milliseconds)")
+        PortsList basic = {
+            InputPort<unsigned>("timeout", 100, "timeout to connect to server (milliseconds)")
         };
+        basic.insert(addition.begin(), addition.end());
+        return basic;
     }
+
+    /**
+     * @brief Creates list of BT ports
+     * @return PortsList Containing basic ports along with node-specific ports
+     */
+    static PortsList providedPorts() 
+    {
+        return providedBasicPorts({});
+    };
 
     /// User must implement this method.
     virtual bool prepareRequest(RequestType& request) = 0;
+
+    // OPTIONAL, called at each tick
+    virtual bool modifyRequest(RequestType& request) {return true;};
 
     /// Method (to be implemented by the user) to receive the reply.
     /// User can decide which NodeStatus it will return (SUCCESS or FAILURE).
@@ -115,6 +134,10 @@ protected:
 
     BT::NodeStatus onRunning() override
     {
+
+        if (!modifyRequest(request_)) {
+            return NodeStatus::FAILURE;
+        }
 
         bool received = service_client_.call( request_, response_ );
         if( !received )

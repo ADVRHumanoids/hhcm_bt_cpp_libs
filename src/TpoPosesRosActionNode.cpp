@@ -10,11 +10,10 @@ TpoPosesRosActionNode::TpoPosesRosActionNode(const std::string& name, const BT::
 
 BT::PortsList TpoPosesRosActionNode::providedPorts() {
     
-    return { 
+    return providedBasicPorts({ 
         BT::InputPort<std::string>("goal_frame_id"),
-        BT::InputPort<std::vector<geometry_msgs::Pose>>("goal_poses"),
-        BT::InputPort<unsigned>("timeout", 500, "timeout to connect (milliseconds)")
-    };
+        BT::InputPort<std::vector<geometry_msgs::Pose>>("goal_poses")
+    });
     
 }
 

@@ -43,18 +43,34 @@ public:
     using PubMsgTypeReg = PubMsgType;
     using SubMsgTypeReg = SubMsgType;
 
-    /// These ports will be added automatically if this Node is
-    /// registered using RegisterRosAction<DeriveClass>()
+    /**
+     * @brief Any subclass of RosTopicPubNode that has additinal ports must provide a
+     * providedPorts method and call providedBasicPorts in it.
+     *
+     * @param addition Additional ports to add to BT port list
+     * @return PortsList Containing basic ports along with node-specific ports
+     */
+    static PortsList providedBasicPorts(PortsList addition)
+    {
+        PortsList basic = {
+            BT::InputPort<unsigned>("timeout", 1000, "timeout to wait for message in the sub topic (milliseconds)")
+        };
+        basic.insert(addition.begin(), addition.end());
+        return basic;
+    }
+
+    /**
+     * @brief Creates list of BT ports
+     * @return PortsList Containing basic ports along with node-specific ports
+     */
     static PortsList providedPorts() 
     {
-        return  {
-            BT::InputPort<unsigned>("timeout", 500, "timeout to wait for message in the sub topic (milliseconds)")
-        };
+        return providedBasicPorts({});
     };
 
     ///Method called in the onStart(). can be used to the fields of  the pub_msg_ object, 
     ///and fill the field
-    virtual bool onStartInitialization() = 0;
+    virtual bool prepareMsg() = 0;
     
     ///This method is called at each loop, and can be used to modify the msg and publish a different one
     /// (like for sending a velocity reference based on the actual position). You may want to check
@@ -97,11 +113,11 @@ public:
 
         auto msg_ptr = ros::topic::waitForMessage<SubMsgType>(sub_.getTopic(), *node_, timeout);
         if( !msg_ptr ){
-            std::cout << "wait for message failed on topic " << sub_.getTopic() << " after waiting for " << timeout.toSec() << std::endl;
+            std::cout << "wait for message failed on topic " << sub_.getTopic() << " after waiting for " << timeout.toSec() << " seconds" <<std::endl;
             return onFailed(SUB_TOPIC_NO_MSG);
         }
         
-        if (!onStartInitialization()) {
+        if (!prepareMsg()) {
             return onFailed(FAIL_ON_START);
         }
                         

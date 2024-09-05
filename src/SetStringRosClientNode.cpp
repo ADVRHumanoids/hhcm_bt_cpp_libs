@@ -12,11 +12,10 @@ SetStringRosClientNode::SetStringRosClientNode(
 
 BT::PortsList SetStringRosClientNode::providedPorts() {
 
-    return { 
+    return providedBasicPorts({ 
         BT::InputPort<std::string>("request"),
-        BT::OutputPort<std::string>("requested"),
-        BT::InputPort<unsigned>("timeout", 100, "timeout to connect to server (milliseconds)")
-    };
+        BT::OutputPort<std::string>("requested")
+    });
 }
 
 

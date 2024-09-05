@@ -10,11 +10,10 @@ GripperRosActionNode::GripperRosActionNode(const std::string& name, const BT::No
 
 BT::PortsList GripperRosActionNode::providedPorts() {
     
-    return { 
+    return providedBasicPorts({ 
         BT::InputPort<double>("position"),
-        BT::InputPort<double>("max_effort"),
-        BT::InputPort<unsigned>("timeout", 500, "timeout to connect (milliseconds)")
-    };
+        BT::InputPort<double>("max_effort")
+    });
     
 }
 
