@@ -25,6 +25,25 @@ namespace BT
 
         return sec_str;
     }
+
+    //string must be in seconds
+    template <> inline ros::WallDuration convertFromString(StringView str)
+    {
+        return ros::WallDuration(convertFromString<double>(str));
+    }    
+
+    template <>
+    std::string toStr(const ros::WallDuration& duration) 
+    {
+        double sec = duration.toSec();
+
+        //std::string old_locale = setlocale(LC_NUMERIC, nullptr);
+        //setlocale(LC_NUMERIC, "C");
+        std::string sec_str = std::to_string(sec);
+        //setlocale(LC_NUMERIC, old_locale.c_str());
+
+        return sec_str;
+    }
     
 } // end namespace BT
 
