@@ -12,6 +12,8 @@ find_package(catkin REQUIRED
     tf2_msgs
     xbot_msgs
     tpo_msgs
+    moveit_msgs
+    moveit_core
 )
 
 find_package(behaviortree_cpp REQUIRED)
@@ -45,6 +47,9 @@ catkin_package(
     ${PROJECT_NAME}_CheckStillTransform 
     ${PROJECT_NAME}_CheckClosestFrame
     ${PROJECT_NAME}_TpoPosesRosActionNode 
+    ${PROJECT_NAME}_ObjectPlanningSceneRosClientNode
+    ${PROJECT_NAME}_ObjectPlanningSceneRosPubNode
+    ${PROJECT_NAME}_ObjectPlanningSceneRosPubCliNode
   CATKIN_DEPENDS 
     roscpp
     rospy
@@ -54,6 +59,8 @@ catkin_package(
     tf2_msgs
     xbot_msgs
     tpo_msgs
+    moveit_msgs
+    moveit_core
   DEPENDS 
     behaviortree_cpp
 )
@@ -168,6 +175,33 @@ target_link_libraries(${PROJECT_NAME}_TpoPosesRosActionNode
 )
 add_dependencies(${PROJECT_NAME}_TpoPosesRosActionNode ${catkin_EXPORTED_TARGETS})
 
+add_library(${PROJECT_NAME}_ObjectPlanningSceneRosClientNode
+    src/ObjectPlanningSceneRosClientNode.cpp
+)
+target_link_libraries(${PROJECT_NAME}_ObjectPlanningSceneRosClientNode 
+    ${catkin_LIBRARIES}
+    BT::behaviortree_cpp
+)
+add_dependencies(${PROJECT_NAME}_ObjectPlanningSceneRosClientNode ${catkin_EXPORTED_TARGETS})
+
+add_library(${PROJECT_NAME}_ObjectPlanningSceneRosPubNode
+    src/ObjectPlanningSceneRosPubNode.cpp
+)
+target_link_libraries(${PROJECT_NAME}_ObjectPlanningSceneRosPubNode 
+    ${catkin_LIBRARIES}
+    BT::behaviortree_cpp
+)
+add_dependencies(${PROJECT_NAME}_ObjectPlanningSceneRosPubNode ${catkin_EXPORTED_TARGETS})
+
+add_library(${PROJECT_NAME}_ObjectPlanningSceneRosPubCliNode
+    src/ObjectPlanningSceneRosPubCliNode.cpp
+)
+target_link_libraries(${PROJECT_NAME}_ObjectPlanningSceneRosPubCliNode 
+    ${catkin_LIBRARIES}
+    BT::behaviortree_cpp
+)
+add_dependencies(${PROJECT_NAME}_ObjectPlanningSceneRosPubCliNode ${catkin_EXPORTED_TARGETS})
+
 
 #############
 ## Install ##
@@ -204,6 +238,9 @@ install(
         ${PROJECT_NAME}_CheckStillTransform 
         ${PROJECT_NAME}_CheckClosestFrame
         ${PROJECT_NAME}_TpoPosesRosActionNode 
+        ${PROJECT_NAME}_ObjectPlanningSceneRosClientNode
+        ${PROJECT_NAME}_ObjectPlanningSceneRosPubNode
+        ${PROJECT_NAME}_ObjectPlanningSceneRosPubCliNode
     ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
     LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
     RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
