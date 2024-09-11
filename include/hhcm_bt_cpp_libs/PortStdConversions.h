@@ -13,8 +13,15 @@ namespace BT
         auto parts = splitString(str, ';');
         std::vector<std::string> output;
         output.reserve(parts.size());
-        for(const StringView& part : parts)
+
+        for(StringView& part : parts)
         {
+            part.remove_prefix(std::min(part.find_first_not_of(" "), part.size()));
+            part.remove_prefix(std::min(part.find_first_not_of("\n"), part.size()));
+            part.remove_prefix(std::min(part.find_first_not_of("\t"), part.size()));
+            part.remove_suffix(part.size() - std::min(part.find_last_not_of(" "), part.size()) - 1);
+            part.remove_suffix(part.size() - std::min(part.find_last_not_of("\n"), part.size()) - 1);
+            part.remove_suffix(part.size() - std::min(part.find_last_not_of("\t"), part.size()) - 1);
             output.push_back(convertFromString<std::string>(part));
         }
         return output;
