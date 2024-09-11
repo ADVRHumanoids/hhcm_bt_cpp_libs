@@ -174,8 +174,6 @@ bool ObjectPlanningSceneRosPubCliNode::checkForUpdated() {
                 }
             }
             if (!add_to_world_update) { //no sense to check for the other
-                std::cout << " add_to_world_update" << std::endl;
-
                 return false;
             }
         }                      
