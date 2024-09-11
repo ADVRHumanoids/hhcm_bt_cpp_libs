@@ -74,10 +74,11 @@ public:
         return BT::NodeStatus::SUCCESS;
     }
 
-private:
+protected:
 
     ros::Publisher pub_;
-    
+private:
+
     ros::NodeHandle* node_;
       
 };
