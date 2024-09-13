@@ -37,7 +37,7 @@
      <!-- <depend>cartesian_interface</depend>  -->
      <depend>geometry_msgs</depend> 
      <depend>control_msgs</depend> 
-    <depend>std_srvs</depend> 
+     <depend>std_srvs</depend> 
      <depend>tf2_ros</depend> 
      <depend>tf2_msgs</depend> 
      <depend>tf2</depend> 
@@ -45,6 +45,7 @@
      <depend>tpo_msgs</depend> 
      <depend>moveit_core</depend> 
      <depend>moveit_msgs</depend> 
+     <depend>franka_gripper</depend> 
      <!-- <depend>utils</depend> 
      <depend>tpo_msgs</depend>  -->
      <!-- <depend>xbot_msgs</depend>  -->

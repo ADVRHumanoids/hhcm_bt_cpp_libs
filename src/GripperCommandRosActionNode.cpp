@@ -1,14 +1,14 @@
-#include <hhcm_bt_cpp_libs/GripperRosActionNode.h>
+#include <hhcm_bt_cpp_libs/GripperCommandRosActionNode.h>
 
-using hhcm_bt::GripperRosActionNode;
+using hhcm_bt::GripperCommandRosActionNode;
 
-GripperRosActionNode::GripperRosActionNode(const std::string& name, const BT::NodeConfig& config, 
+GripperCommandRosActionNode::GripperCommandRosActionNode(const std::string& name, const BT::NodeConfig& config, 
         ros::NodeHandle* nh, const std::string& server_name) :
     BT::RosActionNode<control_msgs::GripperCommandAction>(name, config, nh, server_name)
 {
 }
 
-BT::PortsList GripperRosActionNode::providedPorts() {
+BT::PortsList GripperCommandRosActionNode::providedPorts() {
     
     return providedBasicPorts({ 
         BT::InputPort<double>("position"),
@@ -17,7 +17,7 @@ BT::PortsList GripperRosActionNode::providedPorts() {
     
 }
 
-bool GripperRosActionNode::prepareGoal(GoalType& goal) {
+bool GripperCommandRosActionNode::prepareGoal(GoalType& goal) {
 
     auto position_exp = getInput<double>("position");
     auto max_effort_exp = getInput<double>("max_effort");
@@ -37,7 +37,7 @@ bool GripperRosActionNode::prepareGoal(GoalType& goal) {
     return true;
 }
 
-BT::NodeStatus GripperRosActionNode::onResult( const ResultType& res) {
+BT::NodeStatus GripperCommandRosActionNode::onResult( const ResultType& res) {
 
     if (res.reached_goal || res.stalled) {
 
