@@ -9,13 +9,13 @@
 
 namespace hhcm_bt {
 
-class GripperRosActionNode : public BT::RosActionNode<control_msgs::GripperCommandAction> 
+class GripperCommandRosActionNode : public BT::RosActionNode<control_msgs::GripperCommandAction> 
 {
 public:
-     GripperRosActionNode(const std::string& name, const BT::NodeConfig& config, 
+     GripperCommandRosActionNode(const std::string& name, const BT::NodeConfig& config, 
         ros::NodeHandle* nh, const std::string& server_name);
 
-    virtual ~GripperRosActionNode() {};
+    virtual ~GripperCommandRosActionNode() {};
 
     static BT::PortsList providedPorts();
 

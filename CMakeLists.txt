@@ -12,6 +12,7 @@ find_package(catkin REQUIRED
     tf2_msgs
     xbot_msgs
     tpo_msgs
+    franka_gripper
     moveit_msgs
     moveit_core
 )
@@ -39,7 +40,8 @@ catkin_package(
     ${PROJECT_NAME}_TF 
     ${PROJECT_NAME}_TFHandler 
     ${PROJECT_NAME}_TFReaderNode 
-    ${PROJECT_NAME}_GripperRosActionNode 
+    ${PROJECT_NAME}_GripperCommandRosActionNode 
+    ${PROJECT_NAME}_FrankaGripperGraspRosActionNode 
     ${PROJECT_NAME}_SetStringRosClientNode
     ${PROJECT_NAME}_SetStringRosServerHandler
     ${PROJECT_NAME}_TwistRosPubNode 
@@ -63,6 +65,7 @@ catkin_package(
     tpo_msgs
     moveit_msgs
     moveit_core
+    franka_gripper
   DEPENDS 
     behaviortree_cpp
 )
@@ -105,14 +108,23 @@ target_link_libraries(${PROJECT_NAME}_TFReaderNode
 )
 add_dependencies(${PROJECT_NAME}_TFReaderNode ${catkin_EXPORTED_TARGETS})
 
-add_library(${PROJECT_NAME}_GripperRosActionNode
-    src/GripperRosActionNode.cpp
+add_library(${PROJECT_NAME}_GripperCommandRosActionNode
+    src/GripperCommandRosActionNode.cpp
 )
-target_link_libraries(${PROJECT_NAME}_GripperRosActionNode 
+target_link_libraries(${PROJECT_NAME}_GripperCommandRosActionNode 
     ${catkin_LIBRARIES}
     BT::behaviortree_cpp
 )
-add_dependencies(${PROJECT_NAME}_GripperRosActionNode ${catkin_EXPORTED_TARGETS})
+add_dependencies(${PROJECT_NAME}_GripperCommandRosActionNode ${catkin_EXPORTED_TARGETS})
+
+add_library(${PROJECT_NAME}_FrankaGripperGraspRosActionNode
+    src/FrankaGripperGraspRosActionNode.cpp
+)
+target_link_libraries(${PROJECT_NAME}_FrankaGripperGraspRosActionNode 
+    ${catkin_LIBRARIES}
+    BT::behaviortree_cpp
+)
+add_dependencies(${PROJECT_NAME}_FrankaGripperGraspRosActionNode ${catkin_EXPORTED_TARGETS})
 
 add_library(${PROJECT_NAME}_SetStringRosClientNode
     src/SetStringRosClientNode.cpp
@@ -250,7 +262,8 @@ install(
         ${PROJECT_NAME}_TF 
         ${PROJECT_NAME}_TFHandler 
         ${PROJECT_NAME}_TFReaderNode 
-        ${PROJECT_NAME}_GripperRosActionNode 
+        ${PROJECT_NAME}_GripperCommandRosActionNode 
+        ${PROJECT_NAME}_FrankaGripperGraspRosActionNode 
         ${PROJECT_NAME}_SetStringRosClientNode
         ${PROJECT_NAME}_SetStringRosServerHandler
         ${PROJECT_NAME}_TwistRosContinuosPubNode 
