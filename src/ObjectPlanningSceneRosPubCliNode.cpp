@@ -132,7 +132,7 @@ bool ObjectPlanningSceneRosPubCliNode::prepareMsg() {
         for (const auto& it: not_allowed_collisions) {
             acm.setEntry(it, obj_id, collision_detection::AllowedCollision::NEVER);
         }
-    } 
+    }
 
     acm.getMessage(planning_scene_msg.allowed_collision_matrix);  
 

@@ -9,7 +9,6 @@ StringRosSubHandler::StringRosSubHandler(
     BT::Blackboard::Ptr blackboard)
     :  nh(nh), topic_name(topic_name), port_name(port_name), blackboard(blackboard)
 { 
-    std::cout << "port_name  " << port_name << std::endl;
 
     //USING LAMBRA CAUSES main_bt: ../nptl/pthread_mutex_lock.c:428: __pthread_mutex_lock_full: Assertion `e != ESRCH || !robust' failed. 
     //c++ 14 capture (https://stackoverflow.com/questions/7895879/using-member-variable-in-lambda-capture-list-inside-a-member-function)

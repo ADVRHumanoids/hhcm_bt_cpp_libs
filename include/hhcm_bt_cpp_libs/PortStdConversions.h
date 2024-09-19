@@ -76,6 +76,23 @@ namespace BT
         return output;
     }
 
+    template <>
+    std::string toStr(const std::vector<std::string> input) 
+    {
+        std::string output;
+
+        size_t i = 0;
+        for (; i<input.size()-1; i++) {
+            output.append(input.at(i));
+            output.append(";");
+        }
+
+        //append last without ;
+        output.append(input.at(i));
+
+        return output;
+    }
+
     
 } // end namespace BT
 
