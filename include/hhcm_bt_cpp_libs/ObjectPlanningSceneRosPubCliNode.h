@@ -49,20 +49,23 @@ private:
     const std::string ee_link;
     const std::vector<std::string> ee_touch_links;
 
+    bool obj_to_create;
+
     std::string obj_id;
     std::string obj_type;
     std::string obj_ref_frame;
     std::vector<double> obj_size;
     geometry_msgs::Pose obj_pose;
     std::string add_to, remove_from;
-    std::vector<std::string> allowed_collisions;
-    std::vector<std::string> not_allowed_collisions;
+    std::vector<std::string> allowed_collisions_robot;
+    std::vector<std::string> not_allowed_collisions_robot;
+    std::vector<std::string> allowed_collisions_world;
+    std::vector<std::string> not_allowed_collisions_world;
 
     bool prepareMsg();
     bool checkForUpdated();
 
-    bool create_object(const std::string& id, 
-                       const std::string& type,
+    bool create_object(const std::string& type,
                        const std::vector<double>& dim,
                        const geometry_msgs::Pose& pose,
                        moveit_msgs::CollisionObject& obj);

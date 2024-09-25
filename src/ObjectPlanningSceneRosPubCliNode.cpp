@@ -24,13 +24,17 @@ BT::PortsList ObjectPlanningSceneRosPubCliNode::providedPorts() {
     return {
         BT::InputPort<std::string>("add_to", "robot and/or world"),
         BT::InputPort<std::string>("remove_from", "robot and/or world"),
-        BT::InputPort<std::vector<std::string>>("allowed_collisions", "robot links to which this object is ok to collide"),
-        BT::InputPort<std::vector<std::string>>("not_allowed_collisions", "robot links to which this object is not ok to collide"),
-        BT::InputPort<std::string>("obj_id", "name, unique in the environment"),
-        BT::InputPort<std::string>("obj_type"),
-        BT::InputPort<std::string>("obj_ref_frame"),
+        BT::InputPort<std::vector<std::string>>("allowed_collisions_robot", "robot links to which this object is ok to collide"),
+        BT::InputPort<std::vector<std::string>>("not_allowed_collisions_robot", "robot links to which this object is not ok to collide"),
+        BT::InputPort<std::vector<std::string>>("allowed_collisions_world", "allow these object to collide with the object, and allowed_collisions_robot, but not with not_allowed_collisions_robot"),
+        BT::InputPort<std::vector<std::string>>("not_allowed_collisions_world", "not allow these object to collide with anything (object, allowed_collisions_robot, and not_allowed_collisions_robot)"),
+        BT::InputPort<std::string>("obj_id", "", "name, unique in the environment"),
+        BT::InputPort<std::string>("obj_type", ""),
+        BT::InputPort<std::string>("obj_ref_frame", ""),
         BT::InputPort<geometry_msgs::Pose>("obj_pose"),
-        BT::InputPort<std::vector<double>>("obj_size")
+        BT::InputPort<double>("obj_size_x", 0, "size in x dimension"),
+        BT::InputPort<double>("obj_size_y", 0, "size in y dimension"),
+        BT::InputPort<double>("obj_size_z", 0, "size in z dimension")
     };
 }
 
@@ -75,9 +79,11 @@ bool ObjectPlanningSceneRosPubCliNode::prepareMsg() {
 
         //ADD COLLISION OBJ
         moveit_msgs::AttachedCollisionObject attached_collision_object;
+        attached_collision_object.object.id = obj_id;
 
-        if (! create_object(obj_id, obj_type, obj_size, obj_pose, attached_collision_object.object))
+        if (obj_to_create && !create_object(obj_type, obj_size, obj_pose, attached_collision_object.object))
         {
+            ROS_ERROR("FAIL to create object");
             return false;
         } 
         
@@ -122,18 +128,37 @@ bool ObjectPlanningSceneRosPubCliNode::prepareMsg() {
 
     }
 
-    if (allowed_collisions.size() > 0) {
-        for (const auto& it: allowed_collisions) {
-            acm.setEntry(it, obj_id, collision_detection::AllowedCollision::ALWAYS);
-        }
-    }  
+    for (const auto& it: allowed_collisions_robot) {
+        acm.setEntry(it, obj_id, collision_detection::AllowedCollision::ALWAYS);
+    }
 
-    if (not_allowed_collisions.size() > 0) {
-        for (const auto& it: not_allowed_collisions) {
-            acm.setEntry(it, obj_id, collision_detection::AllowedCollision::NEVER);
+    for (const auto& it: not_allowed_collisions_robot) {
+        acm.setEntry(it, obj_id, collision_detection::AllowedCollision::NEVER);
+    }
+
+    for (const auto& it: allowed_collisions_world) {
+        acm.setEntry(it, obj_id, collision_detection::AllowedCollision::ALWAYS);
+        //allow also collision between such world objects and the robots parts provided
+        for (const auto& rob: allowed_collisions_robot) {
+            acm.setEntry(it, rob, collision_detection::AllowedCollision::ALWAYS);
+        }
+        for (const auto& rob: not_allowed_collisions_robot) {
+            acm.setEntry(it, rob, collision_detection::AllowedCollision::NEVER);
         }
     }
 
+    for (const auto& it: not_allowed_collisions_world) {
+        acm.setEntry(it, obj_id, collision_detection::AllowedCollision::NEVER);
+        //disaallow also collision between such world objects and the robots parts provided
+        for (const auto& rob: not_allowed_collisions_robot) {
+            acm.setEntry(it, rob, collision_detection::AllowedCollision::NEVER);
+        }
+        for (const auto& rob: allowed_collisions_robot) {
+            acm.setEntry(it, rob, collision_detection::AllowedCollision::NEVER);
+        }
+    }
+
+    
     acm.getMessage(planning_scene_msg.allowed_collision_matrix);  
 
     planning_scene_msg.is_diff = true;
@@ -158,7 +183,6 @@ bool ObjectPlanningSceneRosPubCliNode::checkForUpdated() {
                 }
             }
             if (!add_to_robot_update) { //no sense to check for the other
-                std::cout << " add_to_robot_update" << std::endl;
 
                 return false;
             }
@@ -185,7 +209,7 @@ bool ObjectPlanningSceneRosPubCliNode::checkForUpdated() {
 
             for (const auto& it : srv_.response.scene.robot_state.attached_collision_objects) {
                 if (it.object.id.compare(obj_id) == 0) {
-                    std::cout << " aobj to remove robot still there" << std::endl;
+                    std::cout << " obj to remove robot still there" << std::endl;
 
                     return false; //obj to remove still there
                 }
@@ -204,10 +228,10 @@ bool ObjectPlanningSceneRosPubCliNode::checkForUpdated() {
         }
     }
 
-    if (allowed_collisions.size() > 0) {
+    if (allowed_collisions_robot.size() > 0) {
         collision_detection::AllowedCollisionMatrix acm(srv_.response.scene.allowed_collision_matrix);
         collision_detection::AllowedCollision::Type allowed_collision_type;
-        for (const auto& it: allowed_collisions) {
+        for (const auto& it: allowed_collisions_robot) {
             if (! acm.hasEntry(it, obj_id)) {
                 std::cout << " acm not entry" << std::endl;
 
@@ -223,10 +247,10 @@ bool ObjectPlanningSceneRosPubCliNode::checkForUpdated() {
         }
     }  
 
-    if (not_allowed_collisions.size() > 0) {
+    if (not_allowed_collisions_robot.size() > 0) {
         collision_detection::AllowedCollisionMatrix acm(srv_.response.scene.allowed_collision_matrix);
         collision_detection::AllowedCollision::Type allowed_collision_type;
-        for (const auto& it: not_allowed_collisions) {
+        for (const auto& it: not_allowed_collisions_robot) {
             if ( acm.hasEntry(it, obj_id)) { //if there is not, we consider fine since by default everything collide
                 acm.getEntry(it, obj_id, allowed_collision_type);
                 //but if there is, we have to make sure it is set as NEVER allowed
@@ -240,10 +264,46 @@ bool ObjectPlanningSceneRosPubCliNode::checkForUpdated() {
         }
     } 
 
+    if (allowed_collisions_world.size() > 0) {
+        collision_detection::AllowedCollisionMatrix acm(srv_.response.scene.allowed_collision_matrix);
+        collision_detection::AllowedCollision::Type allowed_collision_type;
+        for (const auto& it: allowed_collisions_world) {
+            if (! acm.hasEntry(it, obj_id)) {
+                std::cout << " acm not entry" << std::endl;
+
+                return false;
+            }
+            acm.getEntry(it, obj_id, allowed_collision_type);
+            if (allowed_collision_type != collision_detection::AllowedCollision::ALWAYS) {
+
+                std::cout << " acm allowed collision not yet allowed" << std::endl;
+
+                return false;
+            }
+        }
+    }
+
+    if (not_allowed_collisions_world.size() > 0) {
+        collision_detection::AllowedCollisionMatrix acm(srv_.response.scene.allowed_collision_matrix);
+        collision_detection::AllowedCollision::Type allowed_collision_type;
+        for (const auto& it: not_allowed_collisions_world) {
+            if ( acm.hasEntry(it, obj_id)) { //if there is not, we consider fine since by default everything collide
+                acm.getEntry(it, obj_id, allowed_collision_type);
+                //but if there is, we have to make sure it is set as NEVER allowed
+                if (allowed_collision_type != collision_detection::AllowedCollision::NEVER) {
+
+                    std::cout << " acm not allowed collision not yet not allowed" << std::endl;
+
+                    return false;
+                }
+            }
+        }
+    }
+
     return true;
 }
 
-bool ObjectPlanningSceneRosPubCliNode::create_object(const std::string& id, 
+bool ObjectPlanningSceneRosPubCliNode::create_object(
                                            const std::string& type,
                                            const std::vector<double>& dim,
                                            const geometry_msgs::Pose& pose,
@@ -285,10 +345,9 @@ bool ObjectPlanningSceneRosPubCliNode::create_object(const std::string& id,
     }
 
     primitive.dimensions = dim;
-
+ 
     obj.header.frame_id = obj_ref_frame;
     obj.header.stamp = ros::Time::now();
-    obj.id = id;
     obj.operation = moveit_msgs::CollisionObject::ADD;
 
     obj.primitives.push_back(primitive);    
@@ -302,14 +361,20 @@ bool ObjectPlanningSceneRosPubCliNode::get_ports() {
 
     auto add_to_exp = getInput<std::string>("add_to");
     auto remove_from_exp = getInput<std::string>("remove_from");
-    auto allowed_collisions_exp = getInput<std::vector<std::string>>("allowed_collisions");
-    auto not_allowed_collisions_exp = getInput<std::vector<std::string>>("not_allowed_collisions");
+    auto allowed_collisions_robot_exp = getInput<std::vector<std::string>>("allowed_collisions_robot");
+    auto not_allowed_collisions_robot_exp = getInput<std::vector<std::string>>("not_allowed_collisions_robot");
+    auto allowed_collisions_world_exp = getInput<std::vector<std::string>>("allowed_collisions_world");
+    auto not_allowed_collisions_world_exp = getInput<std::vector<std::string>>("not_allowed_collisions_world");
 
     auto obj_id_exp = getInput<std::string>("obj_id");
     auto obj_type_exp = getInput<std::string>("obj_type");
     auto obj_ref_frame_exp = getInput<std::string>("obj_ref_frame");
     auto obj_pose_exp = getInput<geometry_msgs::Pose>("obj_pose");
-    auto obj_size_exp = getInput<std::vector<double>>("obj_size");
+    auto obj_size_x_exp = getInput<double>("obj_size_x");
+    auto obj_size_y_exp = getInput<double>("obj_size_y");
+    auto obj_size_z_exp = getInput<double>("obj_size_z");
+
+    obj_to_create = false;
 
     if (add_to_exp && add_to_exp.value().size() > 0) {
         add_to = add_to_exp.value();
@@ -329,44 +394,71 @@ bool ObjectPlanningSceneRosPubCliNode::get_ports() {
         remove_from = "";
     }
 
-    
-
     if (!obj_id_exp || obj_id_exp.value().size() == 0) {
-        throw BT::RuntimeError("obj_id port not defined or it is empty!");
+        ROS_ERROR("obj_id port not defined or it is empty!");
+        return false;
     }
     obj_id = obj_id_exp.value();
 
-    if (!allowed_collisions_exp || allowed_collisions_exp.value().size() == 0) {
-        allowed_collisions.clear();
+    if (!allowed_collisions_robot_exp || allowed_collisions_robot_exp.value().size() == 0) {
+        allowed_collisions_robot.clear();
     } else {
-        allowed_collisions = allowed_collisions_exp.value();
+        allowed_collisions_robot = allowed_collisions_robot_exp.value();
     }    
     
-    if (!not_allowed_collisions_exp || not_allowed_collisions_exp.value().size() == 0) {
-        not_allowed_collisions.clear();
+    if (!not_allowed_collisions_robot_exp || not_allowed_collisions_robot_exp.value().size() == 0) {
+        not_allowed_collisions_robot.clear();
     } else {
-        not_allowed_collisions = not_allowed_collisions_exp.value();
+        not_allowed_collisions_robot = not_allowed_collisions_robot_exp.value();
+    }
+
+    if(!allowed_collisions_world_exp || allowed_collisions_world_exp.value().size() == 0) {
+        allowed_collisions_world.clear();
+    } else {
+        allowed_collisions_world = allowed_collisions_world_exp.value();
+    }
+    if (!not_allowed_collisions_world_exp || not_allowed_collisions_world_exp.value().size() == 0) {
+        not_allowed_collisions_world.clear();
+    } else {
+        not_allowed_collisions_world = not_allowed_collisions_world_exp.value();
     }
 
     if (add_to.size() > 0) {
 
         if (!obj_type_exp || obj_type_exp.value().size() == 0) {
-            throw BT::RuntimeError("obj_type port not defined or it is empty!");
+            obj_type = "";
+            obj_ref_frame = "";
+            obj_pose = geometry_msgs::Pose();
+            obj_size.clear();
+            return true;
         }   
         if (!obj_ref_frame_exp || obj_ref_frame_exp.value().size() == 0) {
-            throw BT::RuntimeError("obj_ref_frame port not defined or it is empty!");
+            ROS_ERROR("obj_ref_frame port not defined or it is empty!");
+            return false;
         }       
         if (!obj_pose_exp) {
-            throw BT::RuntimeError("obj_pose port not defined");
+            ROS_ERROR("obj_pose port not defined");
+            return false;
         }       
-        if (!obj_size_exp) {
-            throw BT::RuntimeError("obj_pose port not defined!");
+        if (!obj_size_x_exp) {
+            ROS_ERROR("obj_size_x port not defined!");
+            return false;
         }
+        if (!obj_size_y_exp) {
+            ROS_ERROR("obj_size_y port not defined!");
+            return false;
+        }
+        if (!obj_size_z_exp) {
+            ROS_ERROR("obj_size_z port not defined!");
+            return false;
+        }
+
+        obj_to_create = true;
 
         obj_type = obj_type_exp.value();
         obj_ref_frame = obj_ref_frame_exp.value();
         obj_pose = obj_pose_exp.value();
-        obj_size = obj_size_exp.value();
+        obj_size = {obj_size_x_exp.value(), obj_size_y_exp.value(), obj_size_z_exp.value()};
 
     } else {
         obj_type = "";

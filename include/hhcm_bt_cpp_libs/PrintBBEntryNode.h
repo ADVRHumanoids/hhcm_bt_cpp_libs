@@ -15,7 +15,7 @@ public:
     
     static BT::PortsList providedPorts()
     {
-        return { BT::InputPort<std::string>("entry")};
+        return { BT::InputPort<Type>("entry")};
     }
 
     BT::NodeStatus tick() override

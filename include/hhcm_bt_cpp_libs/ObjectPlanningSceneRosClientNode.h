@@ -10,7 +10,10 @@ namespace hhcm_bt {
 
 /**
  * This is a BT node, hence used inside the BT to call an external ros service being a ROS client
+ * WARN: Do not use this, use ObjectPlanningSceneRosPubClientNode instead. This node is not 
+ * updated with recents changess
  */
+
 class ObjectPlanningSceneRosClientNode : public BT::RosServiceNode<moveit_msgs::ApplyPlanningScene> 
 {
 

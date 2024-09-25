@@ -51,7 +51,7 @@ namespace BT
     }    
 
     template <>
-    std::string toStr(const std::vector<std::vector<double>> input) 
+    std::string toStr(const std::vector<std::vector<double>>& input) 
     {
         std::string output;
 
@@ -77,7 +77,7 @@ namespace BT
     }
 
     template <>
-    std::string toStr(const std::vector<std::string> input) 
+    std::string toStr(const std::vector<std::string>& input) 
     {
         std::string output;
 

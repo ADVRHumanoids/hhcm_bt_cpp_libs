@@ -54,6 +54,7 @@ catkin_package(
     ${PROJECT_NAME}_ObjectPlanningSceneRosClientNode
     ${PROJECT_NAME}_ObjectPlanningSceneRosPubNode
     ${PROJECT_NAME}_ObjectPlanningSceneRosPubCliNode
+    ${PROJECT_NAME}_ObjectComputeGraspingOffset
   CATKIN_DEPENDS 
     roscpp
     rospy
@@ -234,6 +235,15 @@ target_link_libraries(${PROJECT_NAME}_ObjectPlanningSceneRosPubCliNode
 )
 add_dependencies(${PROJECT_NAME}_ObjectPlanningSceneRosPubCliNode ${catkin_EXPORTED_TARGETS})
 
+add_library(${PROJECT_NAME}_ObjectComputeGraspingOffset
+    src/ObjectComputeGraspingOffset.cpp
+)
+target_link_libraries(${PROJECT_NAME}_ObjectComputeGraspingOffset 
+    ${catkin_LIBRARIES}
+    BT::behaviortree_cpp
+)
+add_dependencies(${PROJECT_NAME}_ObjectComputeGraspingOffset ${catkin_EXPORTED_TARGETS})
+
 
 #############
 ## Install ##
@@ -276,6 +286,7 @@ install(
         ${PROJECT_NAME}_ObjectPlanningSceneRosClientNode
         ${PROJECT_NAME}_ObjectPlanningSceneRosPubNode
         ${PROJECT_NAME}_ObjectPlanningSceneRosPubCliNode
+        ${PROJECT_NAME}_ObjectComputeGraspingOffset
     ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
     LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
     RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
