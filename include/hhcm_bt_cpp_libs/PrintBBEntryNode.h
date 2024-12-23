@@ -1,5 +1,5 @@
-#ifndef HHCM_BT_CPP_LIBS_PRINT_BB_ENTRY_H
-#define HHCM_BT_CPP_LIBS_PRINT_BB_ENTRY_H
+#ifndef HHCM_BT_CPP_LIBS_PRINT_BB_ENTRY_NODE_H
+#define HHCM_BT_CPP_LIBS_PRINT_BB_ENTRY_NODE_H
 
 #include <behaviortree_cpp/action_node.h>
 
@@ -18,7 +18,7 @@ public:
         return { BT::InputPort<Type>("entry")};
     }
 
-    BT::NodeStatus tick() override
+    virtual BT::NodeStatus tick() override
     {
         auto val_exp = getInput<Type>("entry");
 
@@ -34,4 +34,4 @@ public:
 
 } //namespace
 
-#endif //HHCM_BT_CPP_LIBS_PRINT_BB_ENTRY_H
+#endif //HHCM_BT_CPP_LIBS_PRINT_BB_ENTRY_NODE_H

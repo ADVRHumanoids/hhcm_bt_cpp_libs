@@ -49,6 +49,7 @@ catkin_package(
     ${PROJECT_NAME}_CheckStillTransform 
     ${PROJECT_NAME}_CheckClosestFrame
     ${PROJECT_NAME}_CheckClosestFramePub
+    ${PROJECT_NAME}_CheckGripperGrasp
     ${PROJECT_NAME}_StringRosSubHandler
     ${PROJECT_NAME}_TpoPosesRosActionNode 
     ${PROJECT_NAME}_ObjectPlanningSceneRosClientNode
@@ -190,6 +191,15 @@ target_link_libraries(${PROJECT_NAME}_CheckClosestFramePub
 )
 add_dependencies(${PROJECT_NAME}_CheckClosestFramePub ${catkin_EXPORTED_TARGETS})
 
+add_library(${PROJECT_NAME}_CheckGripperGrasp
+    src/CheckGripperGrasp.cpp
+)
+target_link_libraries(${PROJECT_NAME}_CheckGripperGrasp 
+    ${catkin_LIBRARIES}
+    BT::behaviortree_cpp
+)
+add_dependencies(${PROJECT_NAME}_CheckGripperGrasp ${catkin_EXPORTED_TARGETS})
+
 add_library(${PROJECT_NAME}_StringRosSubHandler
     src/StringRosSubHandler.cpp
 )
@@ -281,6 +291,7 @@ install(
         ${PROJECT_NAME}_CheckStillTransform 
         ${PROJECT_NAME}_CheckClosestFrame
         ${PROJECT_NAME}_CheckClosestFramePub
+        ${PROJECT_NAME}_CheckGripperGrasp
         ${PROJECT_NAME}_StringRosSubHandler
         ${PROJECT_NAME}_TpoPosesRosActionNode 
         ${PROJECT_NAME}_ObjectPlanningSceneRosClientNode
