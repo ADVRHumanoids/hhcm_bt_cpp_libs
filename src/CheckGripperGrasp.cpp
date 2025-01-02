@@ -36,22 +36,28 @@ BT::NodeStatus CheckGripperGrasp::tick() {
         }
         else if(const sensor_msgs::JointState* gripper_state = gripper_state_exp->castPtr<sensor_msgs::JointState>())
         {
-            std::cout << "[" << name() << "] Joint state value are: \n";
-            for (int i=0; i<gripper_state->name.size(); i++) {
-                std::cout << 
-                    "name: " << gripper_state->name[i] << "\n" <<
-                    "position: " << gripper_state->position[i] << "\n" <<
-                    "velocity: " << gripper_state->velocity[i] << "\n" <<
-                    "effort: " << gripper_state->effort[i] << std::endl;
-            }
-            std::cout << "requested_effort: " << requested_effort << std::endl;
-            std::cout << "requested_effort_max_err: " << requested_effort_max_err.value() << std::endl;
 
+            double err = std::abs(requested_effort - std::abs(gripper_state->effort[0])); //keep abs since dagana eff is inverted
             if (gripper_state->position[0] < 0.95 && //1.0 is open, 0.0 is closed 
-                (std::abs(gripper_state->effort[0] - std::abs(requested_effort)) < requested_effort_max_err.value()) ) {
+                err < requested_effort_max_err.value()) {
                 return BT::NodeStatus::SUCCESS;
-            }
+            } else {
+                std::cout << "[" << name() << "] Check Gripper grasp fail\n" << "Joint state value are: \n";
+                for (int i=0; i<gripper_state->name.size(); i++) {
+                    std::cout << 
+                        "name: " << gripper_state->name[i] << "\n" <<
+                        "position: " << gripper_state->position[i] << "\n" <<
+                        "velocity: " << gripper_state->velocity[i] << "\n" <<
+                        "effort: " << gripper_state->effort[i] << "\n";
+                }
+                std::cout << "requested_effort: " << requested_effort << "\n";
+                std::cout << "effort error: " << err << "\n";
+                std::cout << "requested_effort_max_err: " << requested_effort_max_err.value() << "\n" 
+                    << gripper_state->position[0] << std::endl;
+                }
         }
+    } else {
+        std::cout << "getLockedPortContent failed" << std::endl;
     }
     return BT::NodeStatus::FAILURE;
 
