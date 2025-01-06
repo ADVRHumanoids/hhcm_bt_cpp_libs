@@ -48,6 +48,28 @@ namespace BT
         return output;
     }
 
+    template <>
+    std::vector<float> convertFromString<std::vector<float>>(StringView str)
+    {
+        auto parts = splitString(str, ';');
+        std::vector<float> output;
+        output.resize(parts.size());
+
+        unsigned int i = 0;
+        for(StringView& part : parts)
+        {
+            part.remove_prefix(std::min(part.find_first_not_of(" "), part.size()));
+            part.remove_prefix(std::min(part.find_first_not_of("\n"), part.size()));
+            part.remove_prefix(std::min(part.find_first_not_of("\t"), part.size()));
+            part.remove_suffix(part.size() - std::min(part.find_last_not_of(" "), part.size()) - 1);
+            part.remove_suffix(part.size() - std::min(part.find_last_not_of("\n"), part.size()) - 1);
+            part.remove_suffix(part.size() - std::min(part.find_last_not_of("\t"), part.size()) - 1);
+            output[i] = convertFromString<float>(part);
+            i++;
+        }
+        return output;
+    }
+
     //string must be in seconds
     template <> inline std::vector<std::vector<double>> convertFromString(StringView str)
     {
@@ -116,6 +138,23 @@ namespace BT
 
     template <>
     std::string toStr(const std::array<double, 3>& input) 
+    {
+        std::string output;
+
+        size_t i = 0;
+        for (; i<input.size()-1; i++) {
+            output.append(std::to_string(input.at(i)));
+            output.append(";");
+        }
+
+        //append last without ;
+        output.append(std::to_string(input.at(i)));
+
+        return output;
+    }
+
+    template <>
+    std::string toStr(const std::vector<float>& input) 
     {
         std::string output;
 

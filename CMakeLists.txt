@@ -52,6 +52,7 @@ catkin_package(
     ${PROJECT_NAME}_CheckGripperGrasp
     ${PROJECT_NAME}_StringRosSubHandler
     ${PROJECT_NAME}_TpoPosesRosActionNode 
+    ${PROJECT_NAME}_TpoJointPositionRosActionNode 
     ${PROJECT_NAME}_ObjectPlanningSceneRosClientNode
     ${PROJECT_NAME}_ObjectPlanningSceneRosPubNode
     ${PROJECT_NAME}_ObjectPlanningSceneRosPubCliNode
@@ -218,6 +219,15 @@ target_link_libraries(${PROJECT_NAME}_TpoPosesRosActionNode
 )
 add_dependencies(${PROJECT_NAME}_TpoPosesRosActionNode ${catkin_EXPORTED_TARGETS})
 
+add_library(${PROJECT_NAME}_TpoJointPositionRosActionNode
+    src/TpoJointPositionRosActionNode.cpp
+)
+target_link_libraries(${PROJECT_NAME}_TpoJointPositionRosActionNode 
+    ${catkin_LIBRARIES}
+    BT::behaviortree_cpp
+)
+add_dependencies(${PROJECT_NAME}_TpoJointPositionRosActionNode ${catkin_EXPORTED_TARGETS})
+
 add_library(${PROJECT_NAME}_ObjectPlanningSceneRosClientNode
     src/ObjectPlanningSceneRosClientNode.cpp
 )
@@ -294,6 +304,7 @@ install(
         ${PROJECT_NAME}_CheckGripperGrasp
         ${PROJECT_NAME}_StringRosSubHandler
         ${PROJECT_NAME}_TpoPosesRosActionNode 
+        ${PROJECT_NAME}_TpoJointPositionRosActionNode 
         ${PROJECT_NAME}_ObjectPlanningSceneRosClientNode
         ${PROJECT_NAME}_ObjectPlanningSceneRosPubNode
         ${PROJECT_NAME}_ObjectPlanningSceneRosPubCliNode
