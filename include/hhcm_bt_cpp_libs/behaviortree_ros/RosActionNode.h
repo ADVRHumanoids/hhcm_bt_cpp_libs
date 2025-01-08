@@ -84,10 +84,10 @@ public:
     virtual NodeStatus onFailedRequest(FailureCause failure)
     {
         if (failure == MISSING_SERVER){
-            ROS_ERROR("ROS Action client received failure from server with failure MISSING_SERVER : %s server not found\n", (server_name_).c_str());
+            ROS_ERROR_NAMED(name(), "ROS Action client received failure from server with failure MISSING_SERVER : %s server not found\n", (server_name_).c_str());
 
         } else {
-            ROS_ERROR("ROS Action client received failure from server with failure : %d\n", failure);
+            ROS_ERROR_NAMED(name(), "ROS Action client received failure from server with failure : %d\n", failure);
             
         }
         return NodeStatus::FAILURE;
