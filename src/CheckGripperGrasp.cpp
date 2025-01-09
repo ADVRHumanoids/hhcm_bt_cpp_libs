@@ -48,7 +48,7 @@ BT::NodeStatus CheckGripperGrasp::tick() {
                         "name: " << gripper_state->name[i] << "\n" <<
                         "position: " << gripper_state->position[i] << "\n" <<
                         "velocity: " << gripper_state->velocity[i] << "\n" <<
-                        "effort: " << gripper_state->effort[i] << "\n";
+                        "effort: " << std::abs(gripper_state->effort[i]) << "\n";
                 }
                 std::cout << "requested_effort: " << requested_effort << "\n";
                 std::cout << "effort error: " << err << "\n";
