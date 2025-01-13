@@ -54,6 +54,7 @@ catkin_package(
     ${PROJECT_NAME}_TpoPosesRosActionNode 
     ${PROJECT_NAME}_TpoJointPositionRosActionNode 
     ${PROJECT_NAME}_TFToTpoPoses
+    ${PROJECT_NAME}_SetTpoPosesParams
     ${PROJECT_NAME}_ObjectPlanningSceneRosClientNode
     ${PROJECT_NAME}_ObjectPlanningSceneRosPubNode
     ${PROJECT_NAME}_ObjectPlanningSceneRosPubCliNode
@@ -238,6 +239,15 @@ target_link_libraries(${PROJECT_NAME}_TFToTpoPoses
 )
 add_dependencies(${PROJECT_NAME}_TFToTpoPoses ${catkin_EXPORTED_TARGETS})
 
+add_library(${PROJECT_NAME}_SetTpoPosesParams
+    src/SetTpoPosesParams.cpp
+)
+target_link_libraries(${PROJECT_NAME}_SetTpoPosesParams
+    ${catkin_LIBRARIES}
+    BT::behaviortree_cpp
+)
+add_dependencies(${PROJECT_NAME}_SetTpoPosesParams ${catkin_EXPORTED_TARGETS})
+
 add_library(${PROJECT_NAME}_ObjectPlanningSceneRosClientNode
     src/ObjectPlanningSceneRosClientNode.cpp
 )
@@ -316,6 +326,7 @@ install(
         ${PROJECT_NAME}_TpoPosesRosActionNode 
         ${PROJECT_NAME}_TpoJointPositionRosActionNode 
         ${PROJECT_NAME}_TFToTpoPoses
+        ${PROJECT_NAME}_SetTpoPosesParams
         ${PROJECT_NAME}_ObjectPlanningSceneRosClientNode
         ${PROJECT_NAME}_ObjectPlanningSceneRosPubNode
         ${PROJECT_NAME}_ObjectPlanningSceneRosPubCliNode

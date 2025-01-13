@@ -7,8 +7,8 @@ TFToTpoPoses::TFToTpoPoses(const std::string& name, const BT::NodeConfig& config
     _tf(tf)
 {
 
-    auto ref_frame_exp = getInput<double>("ref_frame");
-    auto target_frame_exp = getInput<double>("target_frame");
+    auto ref_frame_exp = getInput<std::string>("ref_frame");
+    auto target_frame_exp = getInput<std::string>("target_frame");
 
     if (!ref_frame_exp) {
         throw BT::RuntimeError("Missing required input port: ref_frame");
@@ -63,7 +63,7 @@ BT::NodeStatus TFToTpoPoses::tick() {
     std::vector<geometry_msgs::Pose> poses_goal;
     poses_goal.resize(1);
 
-    if (overwrite_x_exp) {
+    if (overwrite_x_exp && overwrite_x_exp.value() != -999) {
         poses_goal.at(0).position.x = overwrite_x_exp.value();
     } else {
         if (offset_x_exp) {
@@ -73,7 +73,7 @@ BT::NodeStatus TFToTpoPoses::tick() {
         }
     }
 
-    if (overwrite_y_exp) {
+    if (overwrite_y_exp && overwrite_y_exp.value() != -999) {
         poses_goal.at(0).position.y = overwrite_y_exp.value();
     } else {
         if (offset_y_exp) {
@@ -83,7 +83,7 @@ BT::NodeStatus TFToTpoPoses::tick() {
         }
     }
 
-    if (overwrite_z_exp) {
+    if (overwrite_z_exp && overwrite_z_exp.value() != -999) {
         poses_goal.at(0).position.z = overwrite_z_exp.value();
     } else {
         if (offset_z_exp) {
@@ -93,8 +93,19 @@ BT::NodeStatus TFToTpoPoses::tick() {
         }
     }
 
+    geometry_msgs::Quaternion over_orientation;
     if (overwrite_orientation_exp) {
+        over_orientation = overwrite_orientation_exp.value();
+    }
+
+    if (overwrite_orientation_exp && 
+        over_orientation.x != -999 && 
+        over_orientation.y != -999 && 
+        over_orientation.z != -999 && 
+        over_orientation.w != -999)  {
+
         poses_goal.at(0).orientation = overwrite_orientation_exp.value();
+
     } else {
         if (offset_orientation_exp) {
             auto offset_orientation = offset_orientation_exp.value();

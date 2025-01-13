@@ -18,7 +18,7 @@ BT::PortsList TpoPosesRosActionNode::providedPorts() {
         BT::InputPort<uint8_t>("control_mode_x", 0, "0:SET, 1:FIX, 2:INCREMENTAL"),
         BT::InputPort<uint8_t>("control_mode_y", 0, "0:SET, 1:FIX, 2:INCREMENTAL"),
         BT::InputPort<uint8_t>("control_mode_z", 0, "0:SET, 1:FIX, 2:INCREMENTAL"),
-        BT::InputPort<uint8_t>("control_mode_rotation", 0, "0:SET, 1:FIX, 2:INCREMENTAL"),     
+        BT::InputPort<uint8_t>("control_mode_orientation", 0, "0:SET, 1:FIX, 2:INCREMENTAL"),     
     });
     
 }
@@ -30,10 +30,21 @@ bool TpoPosesRosActionNode::prepareGoal(GoalType& goal) {
 
     const float error_pos_norm = getInput<float>("error_pos_norm").value();
     const float error_rot_norm = getInput<float>("error_rot_norm").value();
-    const uint8_t control_mode_x = getInput<uint8_t>("control_mode_x").value();
-    const uint8_t control_mode_y = getInput<uint8_t>("control_mode_y").value();
-    const uint8_t control_mode_z = getInput<uint8_t>("control_mode_z").value();
-    const uint8_t control_mode_rotation = getInput<uint8_t>("control_mode_rotation").value();
+    
+    uint8_t control_mode_x, control_mode_y, control_mode_z, control_mode_orientation;
+    if (!getInput<uint8_t>("control_mode_x", control_mode_x)) {
+        throw BT::RuntimeError("Missing required input port: control_mode_x");
+    }
+    if (!getInput<uint8_t>("control_mode_y", control_mode_y)) {
+        throw BT::RuntimeError("Missing required input port: control_mode_y");
+    }
+    if (!getInput<uint8_t>("control_mode_z", control_mode_z)) {
+        throw BT::RuntimeError("Missing required input port: control_mode_z");
+    }
+    if (!getInput<uint8_t>("control_mode_orientation", control_mode_orientation)) {
+        throw BT::RuntimeError("Missing required input port: control_mode_orientation");
+    }
+
     
     goal.header.frame_id = frame_id;
     goal.target_poses = poses;
@@ -42,7 +53,7 @@ bool TpoPosesRosActionNode::prepareGoal(GoalType& goal) {
     goal.control_mode_x = control_mode_x;
     goal.control_mode_y = control_mode_y;
     goal.control_mode_z = control_mode_z;
-    goal.control_mode_orientation = control_mode_rotation;
+    goal.control_mode_orientation = control_mode_orientation;
 
     return true;
 }

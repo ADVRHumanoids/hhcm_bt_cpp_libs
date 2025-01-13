@@ -28,7 +28,7 @@ BT::NodeStatus CheckGripperGrasp::onStart() {
     }
 
     auto requested_effort_max_err_exp = getInput<double>("requested_effort_max_err");
-    if (requested_effort_max_err) {
+    if (requested_effort_max_err_exp) {
         requested_effort_max_err = requested_effort_max_err_exp.value();
     } else {
         throw std::runtime_error("CheckGripperGrasp: no requested_effort_max_err key found in the bb");
