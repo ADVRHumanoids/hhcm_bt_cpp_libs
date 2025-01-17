@@ -67,8 +67,8 @@ BT::NodeStatus TpoPosesRosActionNode::onResult( const ResultType& res) {
 
     } else {
 
-        ROS_WARN_STREAM("TpoPosesRosActionNode failed: actual pos error: " << res.actual_position_error_norm << ", wanted: " << res.wanted_position_error_norm << 
-            ", actual rot error: " << res.actual_rotation_error_norm << ", wanted: " << res.wanted_rotation_error_norm);
+        std::cout << "TpoPosesRosActionNode failed: actual pos error: " << res.actual_position_error_norm << ", wanted: " << res.wanted_position_error_norm << 
+            ", actual rot error: " << res.actual_rotation_error_norm << ", wanted: " << res.wanted_rotation_error_norm << std::endl;
         return BT::NodeStatus::FAILURE;
     }
 }

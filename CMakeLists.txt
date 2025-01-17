@@ -45,11 +45,14 @@ catkin_package(
     ${PROJECT_NAME}_SetStringRosClientNode
     ${PROJECT_NAME}_SetStringRosServerHandler
     ${PROJECT_NAME}_TwistRosPubNode 
+    ${PROJECT_NAME}_JointVelRosPubNode 
     ${PROJECT_NAME}_TwistRosContinuosPubNode 
     ${PROJECT_NAME}_CheckStillTransform 
     ${PROJECT_NAME}_CheckClosestFrame
     ${PROJECT_NAME}_CheckClosestFramePub
     ${PROJECT_NAME}_CheckGripperGrasp
+    ${PROJECT_NAME}_CheckJointsLimits
+    ${PROJECT_NAME}_CheckJointLimit
     ${PROJECT_NAME}_StringRosSubHandler
     ${PROJECT_NAME}_TpoPosesRosActionNode 
     ${PROJECT_NAME}_TpoJointPositionRosActionNode 
@@ -167,6 +170,15 @@ target_link_libraries(${PROJECT_NAME}_TwistRosPubNode
 )
 add_dependencies(${PROJECT_NAME}_TwistRosPubNode ${catkin_EXPORTED_TARGETS})
 
+add_library(${PROJECT_NAME}_JointVelRosPubNode
+    src/JointVelRosPubNode.cpp
+)
+target_link_libraries(${PROJECT_NAME}_JointVelRosPubNode 
+    ${catkin_LIBRARIES}
+    BT::behaviortree_cpp
+)
+add_dependencies(${PROJECT_NAME}_JointVelRosPubNode ${catkin_EXPORTED_TARGETS})
+
 add_library(${PROJECT_NAME}_CheckStillTransform
     src/CheckStillTransform.cpp
 )
@@ -202,6 +214,24 @@ target_link_libraries(${PROJECT_NAME}_CheckGripperGrasp
     BT::behaviortree_cpp
 )
 add_dependencies(${PROJECT_NAME}_CheckGripperGrasp ${catkin_EXPORTED_TARGETS})
+
+add_library(${PROJECT_NAME}_CheckJointsLimits
+    src/CheckJointsLimits.cpp
+)
+target_link_libraries(${PROJECT_NAME}_CheckJointsLimits
+    ${catkin_LIBRARIES}
+    BT::behaviortree_cpp
+)
+add_dependencies(${PROJECT_NAME}_CheckJointsLimits ${catkin_EXPORTED_TARGETS})
+
+add_library(${PROJECT_NAME}_CheckJointLimit
+    src/CheckJointLimit.cpp
+)
+target_link_libraries(${PROJECT_NAME}_CheckJointLimit
+    ${catkin_LIBRARIES}
+    BT::behaviortree_cpp
+)
+add_dependencies(${PROJECT_NAME}_CheckJointLimit ${catkin_EXPORTED_TARGETS})
 
 add_library(${PROJECT_NAME}_StringRosSubHandler
     src/StringRosSubHandler.cpp
@@ -309,28 +339,31 @@ add_dependencies(${PROJECT_NAME}_ObjectComputeGraspingOffset ${catkin_EXPORTED_T
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_libraries.html
 install(
     TARGETS 
-        ${PROJECT_NAME}_TF 
-        ${PROJECT_NAME}_TFHandler 
-        ${PROJECT_NAME}_TFReaderNode 
-        ${PROJECT_NAME}_GripperCommandRosActionNode 
-        ${PROJECT_NAME}_FrankaGripperGraspRosActionNode 
-        ${PROJECT_NAME}_SetStringRosClientNode
-        ${PROJECT_NAME}_SetStringRosServerHandler
-        ${PROJECT_NAME}_TwistRosContinuosPubNode 
-        ${PROJECT_NAME}_TwistRosPubNode
-        ${PROJECT_NAME}_CheckStillTransform 
-        ${PROJECT_NAME}_CheckClosestFrame
-        ${PROJECT_NAME}_CheckClosestFramePub
-        ${PROJECT_NAME}_CheckGripperGrasp
-        ${PROJECT_NAME}_StringRosSubHandler
-        ${PROJECT_NAME}_TpoPosesRosActionNode 
-        ${PROJECT_NAME}_TpoJointPositionRosActionNode 
-        ${PROJECT_NAME}_TFToTpoPoses
-        ${PROJECT_NAME}_SetTpoPosesParams
-        ${PROJECT_NAME}_ObjectPlanningSceneRosClientNode
-        ${PROJECT_NAME}_ObjectPlanningSceneRosPubNode
-        ${PROJECT_NAME}_ObjectPlanningSceneRosPubCliNode
-        ${PROJECT_NAME}_ObjectComputeGraspingOffset
+    ${PROJECT_NAME}_TF 
+    ${PROJECT_NAME}_TFHandler 
+    ${PROJECT_NAME}_TFReaderNode 
+    ${PROJECT_NAME}_GripperCommandRosActionNode 
+    ${PROJECT_NAME}_FrankaGripperGraspRosActionNode 
+    ${PROJECT_NAME}_SetStringRosClientNode
+    ${PROJECT_NAME}_SetStringRosServerHandler
+    ${PROJECT_NAME}_TwistRosContinuosPubNode 
+    ${PROJECT_NAME}_TwistRosPubNode
+    ${PROJECT_NAME}_JointVelRosPubNode
+    ${PROJECT_NAME}_CheckStillTransform 
+    ${PROJECT_NAME}_CheckClosestFrame
+    ${PROJECT_NAME}_CheckClosestFramePub
+    ${PROJECT_NAME}_CheckGripperGrasp
+    ${PROJECT_NAME}_CheckJointsLimits
+    ${PROJECT_NAME}_CheckJointLimit
+    ${PROJECT_NAME}_StringRosSubHandler
+    ${PROJECT_NAME}_TpoPosesRosActionNode 
+    ${PROJECT_NAME}_TpoJointPositionRosActionNode 
+    ${PROJECT_NAME}_TFToTpoPoses
+    ${PROJECT_NAME}_SetTpoPosesParams
+    ${PROJECT_NAME}_ObjectPlanningSceneRosClientNode
+    ${PROJECT_NAME}_ObjectPlanningSceneRosPubNode
+    ${PROJECT_NAME}_ObjectPlanningSceneRosPubCliNode
+    ${PROJECT_NAME}_ObjectComputeGraspingOffset
     ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
     LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
     RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
