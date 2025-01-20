@@ -49,6 +49,35 @@ namespace BT
     }
 
     template <>
+    std::vector<std::array<double, 3>> convertFromString<std::vector<std::array<double, 3>>>(StringView str)
+    {
+        auto parts = splitString(str, ';');
+        std::vector<std::array<double, 3>> output;
+
+        output.reserve(parts.size());
+        for(const StringView& part : parts)
+        {
+            auto inner_parts = splitString(part, ',');
+            std::array<double, 3> inner_output;
+
+            if (inner_parts.size() != 3)
+            {
+                throw std::runtime_error("Invalid number of elements in the array");
+            }
+
+            int i = 0;
+            for(const StringView& inner_part : inner_parts)
+            {
+                inner_output.at(i) = convertFromString<double>(inner_part);
+                i++;
+            }
+
+            output.emplace_back(inner_output);
+        }
+        return output;
+    }    
+
+    template <>
     std::vector<float> convertFromString<std::vector<float>>(StringView str)
     {
         auto parts = splitString(str, ';');
@@ -166,6 +195,31 @@ namespace BT
 
         //append last without ;
         output.append(std::to_string(input.at(i)));
+
+        return output;
+    }
+
+    template <>
+    std::string toStr(const std::vector<std::array<double,3>>& input) 
+    {
+        std::string output;
+
+        size_t i = 0;
+        for (; i<input.size()-1; i++) {
+            output.append(std::to_string(input.at(i).at(0)));
+            output.append(",");
+            output.append(std::to_string(input.at(i).at(1)));
+            output.append(",");
+            output.append(std::to_string(input.at(i).at(2)));
+            output.append(";");
+        }
+
+        //append last without ;
+        output.append(std::to_string(input.at(i).at(0)));
+        output.append(",");
+        output.append(std::to_string(input.at(i).at(1)));
+        output.append(",");
+        output.append(std::to_string(input.at(i).at(2)));
 
         return output;
     }
