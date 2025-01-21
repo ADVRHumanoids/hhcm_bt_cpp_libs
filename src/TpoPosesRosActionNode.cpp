@@ -45,9 +45,12 @@ bool TpoPosesRosActionNode::prepareGoal(GoalType& goal) {
         throw BT::RuntimeError("Missing required input port: control_mode_orientation");
     }
 
-    
-    goal.header.frame_id = frame_id;
-    goal.target_poses = poses;
+    goal.target_poses.resize(poses.size());
+    for (int i =0; i<poses.size(); i++) {
+        goal.target_poses.at(i).pose = poses.at(i);
+        goal.target_poses.at(i).header.frame_id = frame_id;
+        goal.target_poses.at(i).header.stamp = ros::Time::now();
+    }
     goal.wanted_position_error_norm = error_pos_norm;
     goal.wanted_rotation_error_norm = error_rot_norm;
     goal.control_mode_x = control_mode_x;
