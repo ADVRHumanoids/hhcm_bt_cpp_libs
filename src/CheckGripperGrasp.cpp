@@ -63,9 +63,10 @@ BT::NodeStatus CheckGripperGrasp::onRunning() {
                 return BT::NodeStatus::RUNNING;
             }
 
-            double err = std::abs(requested_effort - std::abs(gripper_state->effort[0])); //keep abs since dagana eff is inverted
+            //we consider error only if the torque is below the given
+            bool above_torque_req = std::abs(gripper_state->effort[0]) > (std::abs(requested_effort) - requested_effort_max_err);
             if (gripper_state->position[0] < 0.95 && //0 is open, 1.0 is closed 
-                err < requested_effort_max_err) 
+                above_torque_req) 
             {
                 if (std::chrono::system_clock::now() >= deadline ) {
                     return BT::NodeStatus::SUCCESS;
@@ -80,8 +81,7 @@ BT::NodeStatus CheckGripperGrasp::onRunning() {
                             "effort: " << std::abs(gripper_state->effort[i]) << "\n";
                     }
                     std::cout << "requested_effort: " << requested_effort << "\n";
-                    std::cout << "effort error: " << err << "\n";
-                    std::cout << "requested_effort_max_err: " << requested_effort_max_err << "\n" 
+                    std::cout << "requested_effort_max_err (above is fine): " << requested_effort_max_err << "\n" 
                         << gripper_state->position[0] << std::endl;
 
                     return BT::NodeStatus::RUNNING;
@@ -97,8 +97,7 @@ BT::NodeStatus CheckGripperGrasp::onRunning() {
                         "effort: " << std::abs(gripper_state->effort[i]) << "\n";
                 }
                 std::cout << "requested_effort: " << requested_effort << "\n";
-                std::cout << "effort error: " << err << "\n";
-                std::cout << "requested_effort_max_err: " << requested_effort_max_err << "\n" 
+                std::cout << "requested_effort_max_err (above is fine): " << requested_effort_max_err << "\n" 
                     << gripper_state->position[0] << std::endl;
                 }
         } else {
