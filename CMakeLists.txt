@@ -15,6 +15,7 @@ find_package(catkin REQUIRED
     franka_gripper
     moveit_msgs
     moveit_core
+    hiros_xsens_mtw_wrapper
 )
 
 find_package(behaviortree_cpp REQUIRED)
@@ -43,6 +44,7 @@ catkin_package(
     ${PROJECT_NAME}_GripperCommandRosActionNode 
     ${PROJECT_NAME}_FrankaGripperGraspRosActionNode 
     ${PROJECT_NAME}_SetStringRosClientNode
+    ${PROJECT_NAME}_ResetOrientationXSensWrapperRosClientNode
     ${PROJECT_NAME}_SetStringRosServerHandler
     ${PROJECT_NAME}_TwistRosPubNode 
     ${PROJECT_NAME}_JointVelRosPubNode 
@@ -142,6 +144,16 @@ target_link_libraries(${PROJECT_NAME}_SetStringRosClientNode
     BT::behaviortree_cpp
 )
 add_dependencies(${PROJECT_NAME}_SetStringRosClientNode ${catkin_EXPORTED_TARGETS})
+
+add_library(${PROJECT_NAME}_ResetOrientationXSensWrapperRosClientNode
+    src/ResetOrientationXSensWrapperRosClientNode.cpp
+)
+target_link_libraries(${PROJECT_NAME}_ResetOrientationXSensWrapperRosClientNode
+    ${catkin_LIBRARIES}
+    BT::behaviortree_cpp
+)
+add_dependencies(${PROJECT_NAME}_ResetOrientationXSensWrapperRosClientNode ${catkin_EXPORTED_TARGETS})
+
 
 add_library(${PROJECT_NAME}_SetStringRosServerHandler
     src/SetStringRosServerHandler.cpp
@@ -345,6 +357,7 @@ install(
     ${PROJECT_NAME}_GripperCommandRosActionNode 
     ${PROJECT_NAME}_FrankaGripperGraspRosActionNode 
     ${PROJECT_NAME}_SetStringRosClientNode
+    ${PROJECT_NAME}_ResetOrientationXSensWrapperRosClientNode
     ${PROJECT_NAME}_SetStringRosServerHandler
     ${PROJECT_NAME}_TwistRosContinuosPubNode 
     ${PROJECT_NAME}_TwistRosPubNode

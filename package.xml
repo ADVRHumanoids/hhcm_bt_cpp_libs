@@ -46,6 +46,7 @@
      <depend>moveit_core</depend> 
      <depend>moveit_msgs</depend> 
      <depend>franka_gripper</depend> 
+     <depend>hiros_xsens_mtw_wrapper</depend>
      <!-- <depend>utils</depend> 
      <depend>tpo_msgs</depend>  -->
      <!-- <depend>xbot_msgs</depend>  -->
