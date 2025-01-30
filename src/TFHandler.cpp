@@ -18,23 +18,21 @@ TFHandler::TFHandler(ros::NodeHandle* nh) :
 
 bool TFHandler::getTf()
 {
-    
     if ((ros::Time::now() - last_time) > ros::Duration(0.2)) { //to avoid ros warning tf repeated data
     
-        try {
-            
-            for (auto & it: tf_internal->x_T_x) {
-                
+        for (auto & it: tf_internal->x_T_x) {
+            try {
                 tf2::fromMsg(
                     tf_buffer.lookupTransform(it.first.first, it.first.second, ros::Time(0)),
                     it.second);
             }
-            
-        }
-        catch (tf2::TransformException &ex) {
-            
-            ROS_ERROR_THROTTLE(1,"TFHandler::getTF() Error: %s",ex.what());
-            return false;
+                
+            catch (tf2::TransformException &ex) {
+                
+                ROS_WARN_THROTTLE(2,"TFHandler::getTF() Error: %s",ex.what());
+                continue;
+            }
+
         }
         
         last_time = ros::Time::now();

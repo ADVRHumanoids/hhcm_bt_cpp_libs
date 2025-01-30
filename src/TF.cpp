@@ -54,8 +54,10 @@ bool TF::getTf(const std::pair<std::string, std::string>& key, tf2::Stamped<tf2:
     auto diff = now - it->second.stamp_;
 
     if (timeout > 0 && diff > ros::Duration(timeout) ) {
-        ROS_ERROR("TF::getTf ERROR: pair '%s, %s' has too old stamp: now(%fs), tf_stamp(%fs), diff(%fs)", 
-            key.first.c_str(), key.second.c_str(), now.toSec(), it->second.stamp_.toSec(), diff.toSec());
+        if (key.first.compare("laser") != 0 && key.second.compare("laser") != 0) {
+            ROS_ERROR("TF::getTf ERROR: pair '%s, %s' has too old stamp: now(%fs), tf_stamp(%fs), diff(%fs)", 
+                key.first.c_str(), key.second.c_str(), now.toSec(), it->second.stamp_.toSec(), diff.toSec());
+        }
         return false;
     }
 
