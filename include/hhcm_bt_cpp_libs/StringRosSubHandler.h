@@ -23,16 +23,16 @@ public:
         const std::string& port_name, 
         BT::Blackboard::Ptr blackboard);
 
+protected:
+    BT::Blackboard::Ptr blackboard;
+    virtual void clbk(const std_msgs::String::ConstPtr& msg);
+    const std::string port_name;
+    std::string last_msg;
 
 private:
     ros::NodeHandle* nh;
-    BT::Blackboard::Ptr blackboard;
     const std::string topic_name;
-    const std::string port_name;
-    std::string last_msg;
     ros::Subscriber sub;
-    void clbk(const std_msgs::String::ConstPtr& msg);
-
 
 };
 
